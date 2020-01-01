@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_pause"
+        android:shortcutId="disable5Minutes"
+        android:shortcutLongLabel="@string/action_disable_5_minutes"
+        android:shortcutShortLabel="@string/action_disable_5_minutes">
+        <intent
+            android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
+            android:targetClass="com.wbrawner.pihelper.MainActivity"
+            android:targetPackage="com.wbrawner.pihelper">
+            <extra
+                android:name="com.wbrawner.pihelper.MainFragment.EXTRA_DURATION"
+                android:value="300" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_pause"
+        android:shortcutId="disable30Seconds"
+        android:shortcutLongLabel="@string/action_disable_30_seconds"
+        android:shortcutShortLabel="@string/action_disable_30_seconds">
+        <intent
+            android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
+            android:targetClass="com.wbrawner.pihelper.MainActivity"
+            android:targetPackage="com.wbrawner.pihelper">
+            <extra
+                android:name="com.wbrawner.pihelper.MainFragment.EXTRA_DURATION"
+                android:value="30" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_pause"
+        android:shortcutId="disable10Seconds"
+        android:shortcutLongLabel="@string/action_disable_10_seconds"
+        android:shortcutShortLabel="@string/action_disable_10_seconds">
+        <intent
+            android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
+            android:targetClass="com.wbrawner.pihelper.MainActivity"
+            android:targetPackage="com.wbrawner.pihelper">
+            <extra
+                android:name="com.wbrawner.pihelper.MainFragment.EXTRA_DURATION"
+                android:value="10" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_enable"
+        android:shortcutId="enable"
+        android:shortcutLongLabel="@string/action_enable"
+        android:shortcutShortLabel="@string/action_enable">
+        <intent
+            android:action="com.wbrawner.pihelper.MainFragment.ACTION_ENABLE"
+            android:targetClass="com.wbrawner.pihelper.MainActivity"
+            android:targetPackage="com.wbrawner.pihelper" />
+    </shortcut>
+</shortcuts>

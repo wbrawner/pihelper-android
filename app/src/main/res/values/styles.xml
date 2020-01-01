@@ -1,0 +1,28 @@
+<resources>
+    <style name="BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@drawable/background_splash</item>
+        <item name="android:statusBarColor">@color/colorTransparent</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="AppTheme.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="AppTheme.Button.Green" parent="AppTheme.Button">
+        <item name="backgroundTint">@color/colorGreenDark</item>
+    </style>
+
+    <style name="AppTheme.Button.Red" parent="AppTheme.Button">
+        <item name="backgroundTint">@color/colorRedDark</item>
+    </style>
+</resources>

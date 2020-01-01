@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Pi-Helper</string>
+    <string name="scanning_ip_address">Scanning IP Address:</string>
+    <string name="accessibility_description_pi_helper_logo">Pi-Helper Logo</string>
+    <string name="label_status">Status: %1$s</string>
+    <string name="action_enable">Enable</string>
+    <string name="action_disable">Disable</string>
+    <string name="action_disable_10_seconds">Disable for 10 seconds</string>
+    <string name="action_disable_30_seconds">Disable for 30 seconds</string>
+    <string name="action_disable_5_minutes">Disable for 5 minutes</string>
+    <string name="action_disable_custom">Disable for custom time</string>
+    <string name="action_disable_permanently">Disable Permanently</string>
+    <string name="status_disabled">Disabled</string>
+    <string name="status_enabled">Enabled</string>
+    <string name="scan_failed">Please ensure you are connected to the same Wi-Fi network that the Pi-Hole is running on and try again, or enter the Pi-Hole\'s IP address manually.</string>
+    <string name="scan_failed_title">Pi-Helper failed to find your Pi-Hole</string>
+    <string name="connection_failed">Please ensure you are connected to the same Wi-Fi network that the Pi-Hole is running on, and that you\'re using the correct IP address and try again.</string>
+    <string name="connection_failed_title">Pi-Helper failed to connect to your Pi-Hole</string>
+    <string name="configure_pihelper">Please configure Pi-Helper before using shortcuts</string>
+    <string name="or">or</string>
+    <string name="action_opt_out">Sorry, but no</string>
+    <string name="action_opt_in">Yes, I\'ll help!</string>
+    <string name="prompt_usage_opt_in">Would you like to help me make Pi-Helper better by automatically sending crash reports and usage details via Firebase? These are immensely helpful in tracking down issues that may arise or optimizing the app for only the features that are used. You can change your mind at any time from the settings.</string>
+    <string name="title_usage_opt_in">Help make Pi-Helper better</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_forget_pihole">Forget Pi-hole</string>
+    <string name="content_info"><![CDATA[Pi-Helper was made with ❤ by <a href=\"https://wbrawner.com\">William Brawner</a>. You can find the source code or report issues on the <a href=\"https://github.com/wbrawner/PiHelperAndroid\">GitHub page</a> for the project.]]></string>
+    <string name="confirm_forget_pihole">Are you sure you want to forget your Pi-hole?</string>
+    <string name="warning_cannot_be_undone">This cannot be undone.</string>
+    <string name="title_crash_notification">Pi-Helper Crashed!</string>
+    <string name="text_crash_notification">Would you please consider sending the crash report to me?</string>
+    <string name="channel_crash_notification">Crash Reports</string>
+</resources>
