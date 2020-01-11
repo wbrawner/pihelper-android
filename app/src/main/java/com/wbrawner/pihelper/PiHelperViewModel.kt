@@ -4,25 +4,25 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
 import com.wbrawner.piholeclient.Status
-import com.wbrawner.piholeclient.StatusProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import java.lang.Exception
 import kotlin.coroutines.coroutineContext
 
 class PiHelperViewModel(
     private val apiService: PiHoleApiService
 ) : ViewModel() {
     val status = MutableLiveData<Status>()
-    private var action: (suspend () -> StatusProvider)? = null
+    private var action: (suspend () -> Status)? = null
         get() = field ?: defaultAction
     private var defaultAction = suspend {
-        apiService.getSummary()
+        apiService.getStatus()
     }
 
     suspend fun monitorSummary() {
         while (coroutineContext.isActive) {
             try {
-                status.postValue(action!!.invoke().status)
+                status.postValue(action!!.invoke())
                 action = null
             } catch (ignored: Exception) {
                 break

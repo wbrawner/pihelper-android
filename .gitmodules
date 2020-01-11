@@ -7,3 +7,6 @@
 [submodule "libpihelper/src/main/c/openssl"]
 	path = libpihelper/src/main/c/openssl
 	url = https://github.com/openssl/openssl
+[submodule "libpihelper/src/main/c/pihelper"]
+	path = libpihelper/src/main/c/pihelper
+	url = https://git.wbrawner.com/cgit.cgi/Pi-Helper/pihelper.git

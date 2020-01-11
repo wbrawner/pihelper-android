@@ -1,9 +1,7 @@
 package com.wbrawner.pihelper
 
 import androidx.security.crypto.EncryptedSharedPreferences
-import com.wbrawner.piholeclient.NAME_BASE_URL
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 const val ENCRYPTED_SHARED_PREFS_FILE_NAME = "pihelper.prefs"
@@ -25,9 +23,5 @@ val piHelperModule = module {
 
     viewModel {
         PiHelperViewModel(get())
-    }
-
-    single(named(NAME_BASE_URL)) {
-        get<EncryptedSharedPreferences>().getString(KEY_BASE_URL, "")
     }
 }

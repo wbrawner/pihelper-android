@@ -1,11 +1,46 @@
 # Set the minimum required version for cmake
 cmake_minimum_required(VERSION 3.4.1)
 
+include_directories(include)
 
-set(PIHELPER_STATIC off CACHE BOOL "")
-set(PIHELPER_SHARED on CACHE BOOL "")
+message("Cmake install libdir: ${CMAKE_CURRENT_SOURCE_DIR}/")
+add_library(CURL
+        STATIC
+        IMPORTED
+        GLOBAL)
+set_target_properties(
+        CURL
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/${ANDROID_ABI}/libcurl.a)
 
-add_subdirectory(libpihelper)
+add_library(CRYPTO
+        STATIC
+        IMPORTED
+        GLOBAL)
+set_target_properties(
+        CRYPTO
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/${ANDROID_ABI}/libcrypto.a)
+
+add_library(OPENSSL
+        STATIC
+        IMPORTED
+        GLOBAL)
+set_target_properties(
+        OPENSSL
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/${ANDROID_ABI}/libssl.a)
+
+add_library(JSONC
+        STATIC
+        IMPORTED
+        GLOBAL)
+set_target_properties(
+        JSONC
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/${ANDROID_ABI}/libjson-c.a)
+
+add_subdirectory(pihelper)
 
 add_library(
         pihelper
@@ -23,5 +58,10 @@ find_library(
 target_link_libraries(
         pihelper
         ${log-lib}
-        libpihelpershared
+        z
+        libpihelperstatic
+        CURL
+        CRYPTO
+        OPENSSL
+        JSONC
 )
