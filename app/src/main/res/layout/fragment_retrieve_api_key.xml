@@ -27,21 +27,21 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pi-Helper has successfully connected to your Pi-Hole!"
+            android:text="@string/info_connection_success"
             android:textAlignment="center" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="You'll need to authenticate in order to enable and disable the Pi-hole."
+            android:text="@string/info_authentication_required"
             android:textAlignment="center" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Pi-Hole Web Password">
+            android:hint="@string/prompt_password">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password"
@@ -54,7 +54,7 @@
             android:id="@+id/connectWithPasswordButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Authenticate with Password" />
+            android:text="@string/action_authenticate_password" />
 
         <include layout="@layout/or_divider" />
 
@@ -62,7 +62,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Pi-Hole API Key">
+            android:hint="@string/prompt_api_key">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/apiKey"
@@ -75,7 +75,7 @@
             android:id="@+id/connectWithApiKeyButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Authenticate with API Key" />
+            android:text="@string/action_authenticate_api_key" />
 
     </LinearLayout>
 

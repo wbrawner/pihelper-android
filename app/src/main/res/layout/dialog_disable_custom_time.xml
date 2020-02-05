@@ -12,7 +12,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Time to disable">
+        android:hint="@string/hint_disable_duration">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/time"
@@ -33,12 +33,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Secs" />
+            android:text="@string/duration_seconds" />
 
         <RadioButton
             android:id="@+id/minutes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mins" />
+            android:text="@string/duration_minutes" />
     </RadioGroup>
 </LinearLayout>

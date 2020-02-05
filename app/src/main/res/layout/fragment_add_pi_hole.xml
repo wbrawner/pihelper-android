@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:contentDescription="@string/app_name"
             android:src="@drawable/ic_app_logo"
             android:tint="@color/colorOnSurface"
             android:transitionName="piHelperLogo" />
@@ -26,28 +27,28 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="If you're not sure what the IP address for your Pi-Hole is, Pi-Helper can attempt to find it for you by scanning your network."
+            android:text="@string/info_scan_network"
             android:textAlignment="center" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/scanNetworkButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Scan Network" />
+            android:text="@string/action_scan_network" />
 
         <include layout="@layout/or_divider" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="If you already know the IP address of your Pi-Hole, you can also enter it below:"
+            android:text="@string/info_connect"
             android:textAlignment="center" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Pi-Hole IP Address">
+            android:hint="@string/prompt_ip_address">
 
             <!-- TODO: Figure out how to get this to work for inputting an IP address -->
             <com.google.android.material.textfield.TextInputEditText
@@ -60,7 +61,7 @@
             android:id="@+id/connectButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connect to Pi-Hole" />
+            android:text="@string/action_connect_pihole" />
 
     </LinearLayout>
 

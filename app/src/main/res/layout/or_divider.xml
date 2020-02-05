@@ -12,7 +12,8 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:scaleType="fitXY"
-        android:src="@drawable/horizontal_rule" />
+        android:src="@drawable/horizontal_rule"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,6 +30,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:scaleType="fitXY"
-        android:src="@drawable/horizontal_rule" />
+        android:src="@drawable/horizontal_rule"
+        tools:ignore="ContentDescription" />
 
 </LinearLayout>
