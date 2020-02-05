@@ -4,4 +4,5 @@
     <color name="colorOnSurface">#f1f1f1</color>
     <color name="colorEnabled">@color/colorGreenLight</color>
     <color name="colorDisabled">@color/colorRedLight</color>
+    <color name="colorButtonSecondary">#999999</color>
 </resources>

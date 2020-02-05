@@ -27,6 +27,7 @@ class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
         sharedElementEnterTransition = TransitionInflater.from(context)
             .inflateTransition(android.R.transition.move)
         viewModel.authenticated.observe(this, Observer {
+            if (!it) return@Observer
             findNavController().navigate(R.id.action_retrieveApiKeyFragment_to_mainFragment)
         })
     }

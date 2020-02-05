@@ -1,5 +1,6 @@
 package com.wbrawner.piholeclient
 
+import androidx.annotation.Keep
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -35,13 +36,14 @@ data class Summary(
     val ipReplies: String?,
     @Json(name = "privacy_level")
     val privacyLevel: String,
-    val status: Status,
+    override val status: Status,
     @Json(name = "gravity_last_updated")
     val gravity: Gravity?,
     val type: String?,
     val version: Int?
-)
+) : StatusProvider
 
+@Keep
 enum class Status {
     @Json(name = "enabled")
     ENABLED,
@@ -69,11 +71,15 @@ data class VersionResponse(val version: Int)
 
 @JsonClass(generateAdapter = true)
 data class TopItemsResponse(
-    @Json(name = "top_queries") val topQueries: List<String>,
+    @Json(name = "top_queries") val topQueries: Map<String, String>,
     @Json(name = "top_ads") val topAds: List<String>
 )
 
 @JsonClass(generateAdapter = true)
 data class StatusResponse(
+    override val status: Status
+) : StatusProvider
+
+interface StatusProvider {
     val status: Status
-)
+}

@@ -44,28 +44,35 @@ class MainFragment : Fragment(), CoroutineScope {
             }
             viewModel.monitorSummary()
         }
-        viewModel.summary.observe(this, Observer { summary ->
+        viewModel.status.observe(this, Observer {
             showProgress(false)
-            val (statusColor, statusText) = if (
-                summary.status == Status.DISABLED
-            ) {
-                enableButton?.visibility = View.VISIBLE
-                disableButtons?.visibility = View.GONE
-                Pair(R.color.colorDisabled, R.string.status_disabled)
-            } else {
-                enableButton?.visibility = View.GONE
-                disableButtons?.visibility = View.VISIBLE
-                Pair(R.color.colorEnabled, R.string.status_enabled)
+            val (statusColor, statusText) = when (it) {
+                Status.DISABLED -> {
+                    enableButton?.visibility = View.VISIBLE
+                    disableButtons?.visibility = View.GONE
+                    Pair(R.color.colorDisabled, R.string.status_disabled)
+                }
+                Status.ENABLED -> {
+                    enableButton?.visibility = View.GONE
+                    disableButtons?.visibility = View.VISIBLE
+                    Pair(R.color.colorEnabled, R.string.status_enabled)
+                }
+                else -> {
+                    enableButton?.visibility = View.GONE
+                    disableButtons?.visibility = View.GONE
+                    Pair(R.color.colorUnknown, R.string.status_unknown)
+                }
             }
-            status?.let {
+            status?.let { textView ->
                 val status = getString(statusText)
                 val statusLabel = getString(R.string.label_status, status)
                 val start = statusLabel.indexOf(status)
                 val end = start + status.length
                 val statusSpan = SpannableString(statusLabel)
                 statusSpan[start, end] = StyleSpan(Typeface.BOLD)
-                statusSpan[start, end] = ForegroundColorSpan(getColor(it.context, statusColor))
-                it.text = statusSpan
+                statusSpan[start, end] =
+                    ForegroundColorSpan(getColor(textView.context, statusColor))
+                textView.text = statusSpan
             }
         })
     }
@@ -124,7 +131,7 @@ class MainFragment : Fragment(), CoroutineScope {
         }
         disableCustomTimeButton?.setOnClickListener {
             val dialogView = LayoutInflater.from(it.context)
-                .inflate(R.layout.dialog_disable_custom_time, null, false)
+                .inflate(R.layout.dialog_disable_custom_time, view as ViewGroup, false)
             AlertDialog.Builder(it.context)
                 .setTitle(R.string.action_disable_custom)
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }

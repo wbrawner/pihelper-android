@@ -3,23 +3,27 @@ package com.wbrawner.pihelper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
-import com.wbrawner.piholeclient.Summary
-import kotlinx.coroutines.NonCancellable.isActive
+import com.wbrawner.piholeclient.Status
+import com.wbrawner.piholeclient.StatusProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.yield
-import java.lang.Exception
 import kotlin.coroutines.coroutineContext
 
 class PiHelperViewModel(
     private val apiService: PiHoleApiService
 ) : ViewModel() {
-    val summary = MutableLiveData<Summary>()
+    val status = MutableLiveData<Status>()
+    private var action: (suspend () -> StatusProvider)? = null
+        get() = field ?: defaultAction
+    private var defaultAction = suspend {
+        apiService.getSummary()
+    }
 
     suspend fun monitorSummary() {
         while (coroutineContext.isActive) {
             try {
-                loadSummary()
+                status.postValue(action!!.invoke().status)
+                action = null
             } catch (ignored: Exception) {
                 break
             }
@@ -27,15 +31,15 @@ class PiHelperViewModel(
         }
     }
 
-    suspend fun loadSummary() {
-        summary.postValue(apiService.getSummary())
-    }
-
     suspend fun enablePiHole() {
-        apiService.enable()
+        action = {
+            apiService.enable()
+        }
     }
 
     suspend fun disablePiHole(duration: Long? = null) {
-        apiService.disable(duration)
+        action = {
+            apiService.disable(duration)
+        }
     }
 }

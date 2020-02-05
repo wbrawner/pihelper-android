@@ -30,4 +30,5 @@
     <string name="title_crash_notification">Pi-Helper Crashed!</string>
     <string name="text_crash_notification">Would you please consider sending the crash report to me?</string>
     <string name="channel_crash_notification">Crash Reports</string>
+    <string name="status_unknown">Unknown</string>
 </resources>

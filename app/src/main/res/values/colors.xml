@@ -10,6 +10,7 @@
     <color name="colorOnSurface">#000000</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorEnabled">@color/colorGreenDark</color>
+    <color name="colorUnknown">@color/colorButtonSecondary</color>
     <color name="colorDisabled">@color/colorRedDark</color>
     <color name="colorSurface">@color/colorWhite</color>
     <color name="colorTransparent">#00000000</color>
