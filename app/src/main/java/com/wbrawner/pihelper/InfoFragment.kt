@@ -15,12 +15,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.pihelper.MainActivity.Companion.ACTION_FORGET_PIHOLE
-import kotlinx.android.synthetic.main.fragment_main.toolbar
 import kotlinx.android.synthetic.main.fragment_info.*
+import kotlinx.android.synthetic.main.fragment_main.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.android.inject
-import java.lang.RuntimeException
 import kotlin.coroutines.CoroutineContext
 
 class InfoFragment : Fragment(), CoroutineScope {
@@ -30,7 +29,6 @@ class InfoFragment : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        throw RuntimeException("I crashed!")
     }
 
     override fun onCreateView(

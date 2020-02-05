@@ -1,3 +1,9 @@
 package com.wbrawner.pihelper
 
-fun <T, R> R.transform(block: (R) -> T): T = block(this)
+import java.math.BigInteger
+import java.security.MessageDigest
+
+fun String.hash(): String = BigInteger(
+    1,
+    MessageDigest.getInstance("SHA-256").digest(this.toByteArray())
+).toString(16)

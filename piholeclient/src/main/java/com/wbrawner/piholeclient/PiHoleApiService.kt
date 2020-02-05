@@ -4,19 +4,13 @@ import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.reflect.KClass
 
 interface PiHoleApiService {
     var baseUrl: String?
     var apiKey: String?
-
-    suspend fun login(password: String): String
-
-    suspend fun getApiToken(): String
 
     suspend fun getSummary(
         version: Boolean = false,
@@ -48,8 +42,6 @@ interface PiHoleApiService {
 }
 
 const val BASE_PATH = "/admin/api.php"
-const val INDEX_PATH = "/admin/index.php"
-const val API_TOKEN_PATH = "/admin/scripts/pi-hole/php/api_token.php"
 
 class OkHttpPiHoleApiService(
     private val okHttpClient: OkHttpClient,
@@ -108,26 +100,6 @@ class OkHttpPiHoleApiService(
             .get()
             .url(url.build())
         return sendRequest(request.build(), TopItemsResponse::class)!!
-    }
-
-    override suspend fun login(password: String): String {
-        val url = urlBuilder
-            .encodedPath(INDEX_PATH)
-            .addQueryParameter("login", "")
-        val body = "pw=$password".toRequestBody("application/x-www-form-urlencoded".toMediaType())
-        val request = Request.Builder()
-            .post(body)
-            .url(url.build())
-        return sendRequest(request.build(), String::class)!!
-    }
-
-    override suspend fun getApiToken(): String {
-        val url = urlBuilder
-            .encodedPath(API_TOKEN_PATH)
-        val request = Request.Builder()
-            .get()
-            .url(url.build())
-        return sendRequest(request.build(), String::class)!!
     }
 
     override suspend fun enable(): StatusResponse {

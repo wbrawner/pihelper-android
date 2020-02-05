@@ -6,15 +6,11 @@ import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
-import com.wbrawner.piholeclient.Summary
 import com.wbrawner.piholeclient.VersionResponse
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.ConnectException
 import java.net.SocketTimeoutException
-import java.util.regex.Pattern
-import java.util.regex.Pattern.DOTALL
 
 const val KEY_BASE_URL = "baseUrl"
 const val KEY_API_KEY = "apiKey"
@@ -56,7 +52,9 @@ class AddPiHelperViewModel(
     suspend fun beginScanning(deviceIpAddress: String) {
         val addressParts = deviceIpAddress.split(".").toMutableList()
         var chunks = 1
-        val ipAddresses = mutableListOf<String>()
+        // If the Pi-hole is correctly set up, then there should be a special host for it as
+        // "pi.hole"
+        val ipAddresses = mutableListOf("pi.hole")
         while (chunks <= IP_MAX) {
             val chunkSize = (IP_MAX - IP_MIN + 1) / chunks
             if (chunkSize == 1) {
@@ -111,16 +109,8 @@ class AddPiHelperViewModel(
     }
 
     suspend fun authenticateWithPassword(password: String) {
-        // Perform the login to get the PHPSESSID cookie set
-        apiService.login(password)
-        val html = apiService.getApiToken()
-        val matcher = Pattern.compile(".*Raw API Token: ([a-z0-9]+).*", DOTALL)
-            .matcher(html)
-        if (!matcher.matches()) {
-            throw RuntimeException("Unable to retrieve API token from password")
-        }
-        val apiToken = matcher.group(1)!!
-        authenticateWithApiKey(apiToken)
+        // The Pi-hole API key is just the web password hashed twice with SHA-256
+        authenticateWithApiKey(password.hash().hash())
     }
 
     suspend fun authenticateWithApiKey(apiKey: String) {
