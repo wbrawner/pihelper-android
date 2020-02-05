@@ -4,6 +4,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.wbrawner.pihelper.MainFragment.Companion.ACTION_DISABLE
 import com.wbrawner.pihelper.MainFragment.Companion.ACTION_ENABLE
@@ -12,12 +13,14 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
     private val addPiHoleViewModel: AddPiHelperViewModel by inject()
+    private val navController: NavController by lazy {
+        findNavController(R.id.content_main)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         window.setBackgroundDrawable(ColorDrawable(getColor(R.color.colorSurface)))
-        val navController = findNavController(R.id.content_main)
         val analyticsBundle = Bundle()
         analyticsBundle.putString("intent_action", intent.action)
         val args = when (intent.action) {
@@ -54,27 +57,29 @@ class MainActivity : AppCompatActivity() {
             }
             else -> null
         }
-        val navDestination = when {
+        when {
             navController.currentDestination?.id != R.id.placeholder && args == null -> {
                 return
             }
             addPiHoleViewModel.baseUrl.isNullOrBlank() -> {
-                R.id.addPiHoleFragment
+                navController.navigate(R.id.addPiHoleFragment, args)
             }
             addPiHoleViewModel.apiKey.isNullOrBlank() -> {
-                R.id.retrieveApiKeyFragment
+                navController.navigate(R.id.addPiHoleFragment)
+                navController.navigate(R.id.retrieveApiKeyFragment, args)
             }
             else -> {
-                R.id.mainFragment
+                navController.navigate(R.id.mainFragment, args)
             }
         }
-        navController.navigate(navDestination, args)
     }
 
     override fun onBackPressed() {
-        when (findNavController(R.id.content_main).currentDestination?.id) {
-            R.id.addPiHoleFragment, R.id.mainFragment -> finish()
-            else -> super.onBackPressed()
+        if (!navController.navigateUp()) {
+            finish()
+        }
+        if (navController.currentDestination?.id == R.id.placeholder) {
+            finish()
         }
     }
 
