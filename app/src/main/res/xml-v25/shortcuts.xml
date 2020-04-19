@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_shortcut_pause"
         android:shortcutId="disable5Minutes"
         android:shortcutLongLabel="@string/action_disable_5_minutes"
-        android:shortcutShortLabel="@string/action_disable_5_minutes">
+        android:shortcutShortLabel="@string/action_disable_5_minutes_short">
         <intent
             android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
@@ -21,7 +21,7 @@
         android:icon="@drawable/ic_shortcut_pause"
         android:shortcutId="disable30Seconds"
         android:shortcutLongLabel="@string/action_disable_30_seconds"
-        android:shortcutShortLabel="@string/action_disable_30_seconds">
+        android:shortcutShortLabel="@string/action_disable_30_seconds_short">
         <intent
             android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
@@ -37,7 +37,7 @@
         android:icon="@drawable/ic_shortcut_pause"
         android:shortcutId="disable10Seconds"
         android:shortcutLongLabel="@string/action_disable_10_seconds"
-        android:shortcutShortLabel="@string/action_disable_10_seconds">
+        android:shortcutShortLabel="@string/action_disable_10_seconds_short">
         <intent
             android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
