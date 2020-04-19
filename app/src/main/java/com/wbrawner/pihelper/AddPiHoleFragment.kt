@@ -2,9 +2,12 @@ package com.wbrawner.pihelper
 
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -12,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_add_pi_hole.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
@@ -39,6 +42,21 @@ class AddPiHoleFragment : Fragment(), CoroutineScope {
         }
         connectButton.setOnClickListener {
             launch {
+                val progressDialog = AlertDialog.Builder(it.context)
+                    .setTitle(R.string.connecting_to_pihole)
+                    .setNegativeButton(R.string.action_cancel) { _, _ ->
+                        cancel()
+                    }
+                    .setView(FrameLayout(it.context).apply {
+                        addView(ProgressBar(it.context).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                Gravity.CENTER
+                            )
+                        })
+                    })
+                    .show()
                 if (viewModel.connectToIpAddress(ipAddress.text.toString())) {
                     navController.navigate(
                         R.id.action_addPiHoleFragment_to_retrieveApiKeyFragment,
@@ -53,12 +71,13 @@ class AddPiHoleFragment : Fragment(), CoroutineScope {
                         .setPositiveButton(android.R.string.ok) { _, _ -> }
                         .show()
                 }
+                progressDialog.dismiss()
             }
         }
     }
 
     override fun onDestroyView() {
-        coroutineContext[Job]?.cancel()
+        cancel()
         super.onDestroyView()
     }
 }

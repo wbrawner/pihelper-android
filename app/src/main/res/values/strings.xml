@@ -44,4 +44,6 @@
     <string name="action_authenticate_password">Authenticate with Password</string>
     <string name="prompt_api_key">Pi-Hole API Key</string>
     <string name="action_authenticate_api_key">Authenticate with API Key</string>
+    <string name="connecting_to_pihole">Connecting to Pi-hole…</string>
+    <string name="action_cancel">Cancel</string>
 </resources>

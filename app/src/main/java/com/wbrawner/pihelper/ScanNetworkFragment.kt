@@ -61,10 +61,10 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.scanningIp.observe(this, Observer {
+        viewModel.scanningIp.observe(viewLifecycleOwner, Observer {
             ipAddress?.text = it
         })
-        viewModel.piHoleIpAddress.observe(this, Observer { ipAddress ->
+        viewModel.piHoleIpAddress.observe(viewLifecycleOwner, Observer { ipAddress ->
             if (ipAddress == null) {
                 AlertDialog.Builder(view.context)
                     .setTitle(R.string.scan_failed_title)
@@ -140,7 +140,7 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
 
     override fun onDestroyView() {
         piHelperLogo.clearAnimation()
-        coroutineContext[Job]?.cancel()
+        cancel()
         super.onDestroyView()
     }
 
