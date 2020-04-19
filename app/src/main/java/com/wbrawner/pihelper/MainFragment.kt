@@ -94,7 +94,7 @@ class MainFragment : Fragment(), CoroutineScope {
             try {
                 viewModel.enablePiHole()
             } catch (ignored: Exception) {
-                Log.e("Pi-Helper", "Failed to enable Pi-Hole", ignored)
+                Log.e("Pi-helper", "Failed to enable Pi-Hole", ignored)
             }
         }
         disable10SecondsButton?.setSuspendingOnClickListener(this) {
@@ -102,7 +102,7 @@ class MainFragment : Fragment(), CoroutineScope {
             try {
                 viewModel.disablePiHole(10)
             } catch (ignored: Exception) {
-                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
+                Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
         disable30SecondsButton?.setSuspendingOnClickListener(this) {
@@ -110,7 +110,7 @@ class MainFragment : Fragment(), CoroutineScope {
             try {
                 viewModel.disablePiHole(30)
             } catch (ignored: Exception) {
-                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
+                Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
         disable5MinutesButton?.setSuspendingOnClickListener(this) {
@@ -118,7 +118,7 @@ class MainFragment : Fragment(), CoroutineScope {
             try {
                 viewModel.disablePiHole(300)
             } catch (ignored: Exception) {
-                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
+                Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
         disableCustomTimeButton?.setOnClickListener {
@@ -159,7 +159,7 @@ class MainFragment : Fragment(), CoroutineScope {
             try {
                 viewModel.disablePiHole()
             } catch (ignored: Exception) {
-                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
+                Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
     }

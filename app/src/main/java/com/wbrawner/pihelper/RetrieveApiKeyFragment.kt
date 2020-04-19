@@ -13,8 +13,6 @@ import androidx.transition.TransitionInflater
 import kotlinx.android.synthetic.main.fragment_retrieve_api_key.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
@@ -38,32 +36,42 @@ class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
     ): View? = inflater.inflate(R.layout.fragment_retrieve_api_key, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        connectWithPasswordButton.setOnClickListener {
-            launch {
-                try {
-                    viewModel.authenticateWithPassword(password.text.toString())
-                } catch (ignored: Exception) {
-                    Log.e("Pi-Helper", "Failed to authenticate with password", ignored)
-                    password.error = "Failed to authenticate with given password. Please verify " +
-                            "you've entered it correctly and try again."
-                }
+        password.setOnEditorActionListener { _, _, _ ->
+            connectWithPasswordButton.performClick()
+        }
+        connectWithPasswordButton.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.authenticateWithPassword(password.text.toString())
+            } catch (ignored: Exception) {
+                Log.e("Pi-helper", "Failed to authenticate with password", ignored)
+                password.error = "Failed to authenticate with given password. Please verify " +
+                        "you've entered it correctly and try again."
+                showProgress(false)
             }
         }
-
-        connectWithApiKeyButton.setOnClickListener {
-            launch {
-                try {
-                    viewModel.authenticateWithApiKey(apiKey.text.toString())
-                } catch (ignored: Exception) {
-                    apiKey.error = "Failed to authenticate with given API key. Please verify " +
-                            "you've entered it correctly and try again."
-                }
+        apiKey.setOnEditorActionListener { _, _, _ ->
+            connectWithApiKeyButton.performClick()
+        }
+        connectWithApiKeyButton.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.authenticateWithApiKey(apiKey.text.toString())
+            } catch (ignored: Exception) {
+                apiKey.error = "Failed to authenticate with given API key. Please verify " +
+                        "you've entered it correctly and try again."
+                showProgress(false)
             }
         }
     }
 
+    private fun showProgress(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        authenticationForm.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
     override fun onDestroyView() {
-        coroutineContext[Job]?.cancel()
+        cancel()
         super.onDestroyView()
     }
 }

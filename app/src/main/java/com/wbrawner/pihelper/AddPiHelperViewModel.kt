@@ -95,7 +95,7 @@ class AddPiHelperViewModel(
             } catch (ignored: SocketTimeoutException) {
                 null
             } catch (e: Exception) {
-                Log.e("Pi-Helper", "Failed to load Pi-Hole version at $ipAddress", e)
+                Log.e("Pi-helper", "Failed to load Pi-Hole version at $ipAddress", e)
                 null
             }
         }
@@ -123,7 +123,7 @@ class AddPiHelperViewModel(
             this.apiKey = apiKey
             authenticated.postValue(true)
         } catch (e: Exception) {
-            Log.e("Pi-Helper", "Unable to authenticate with API key", e)
+            Log.e("Pi-helper", "Unable to authenticate with API key", e)
             authenticated.postValue(false)
             throw e
         }

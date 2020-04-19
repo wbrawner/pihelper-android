@@ -21,7 +21,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import kotlinx.android.synthetic.main.fragment_scan_network.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.net.Inet4Address
 import kotlin.coroutines.CoroutineContext
@@ -109,7 +112,7 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
                             ?.filter { !it.address.isLoopbackAddress && it.address is Inet4Address }
                             ?.forEach { address ->
                                 Log.d(
-                                    "Pi-Helper",
+                                    "Pi-helper",
                                     "Found link address: ${address.address.hostName}"
                                 )
                                 viewModel.beginScanning(address.address.hostAddress)
