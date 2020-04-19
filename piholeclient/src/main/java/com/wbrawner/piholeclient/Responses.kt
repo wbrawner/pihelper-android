@@ -72,7 +72,7 @@ data class VersionResponse(val version: Int)
 @JsonClass(generateAdapter = true)
 data class TopItemsResponse(
     @Json(name = "top_queries") val topQueries: Map<String, String>,
-    @Json(name = "top_ads") val topAds: List<String>
+    @Json(name = "top_ads") val topAds: Map<String, Double>
 )
 
 @JsonClass(generateAdapter = true)
