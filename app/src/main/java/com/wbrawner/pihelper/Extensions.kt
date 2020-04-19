@@ -6,4 +6,4 @@ import java.security.MessageDigest
 fun String.hash(): String = BigInteger(
     1,
     MessageDigest.getInstance("SHA-256").digest(this.toByteArray())
-).toString(16)
+).toString(16).padStart(64, '0')
