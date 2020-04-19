@@ -89,44 +89,36 @@ class MainFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
         showProgress(true)
-        enableButton?.setOnClickListener {
-            launch {
-                showProgress(true)
-                try {
-                    viewModel.enablePiHole()
-                } catch (ignored: Exception) {
-                    Log.e("Pi-Helper", "Failed to enable Pi-Hole", ignored)
-                }
+        enableButton?.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.enablePiHole()
+            } catch (ignored: Exception) {
+                Log.e("Pi-Helper", "Failed to enable Pi-Hole", ignored)
             }
         }
-        disable10SecondsButton?.setOnClickListener {
-            launch {
-                showProgress(true)
-                try {
-                    viewModel.disablePiHole(10)
-                } catch (ignored: Exception) {
-                    Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
-                }
+        disable10SecondsButton?.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.disablePiHole(10)
+            } catch (ignored: Exception) {
+                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
             }
         }
-        disable30SecondsButton?.setOnClickListener {
-            launch {
-                showProgress(true)
-                try {
-                    viewModel.disablePiHole(30)
-                } catch (ignored: Exception) {
-                    Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
-                }
+        disable30SecondsButton?.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.disablePiHole(30)
+            } catch (ignored: Exception) {
+                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
             }
         }
-        disable5MinutesButton?.setOnClickListener {
-            launch {
-                showProgress(true)
-                try {
-                    viewModel.disablePiHole(300)
-                } catch (ignored: Exception) {
-                    Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
-                }
+        disable5MinutesButton?.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.disablePiHole(300)
+            } catch (ignored: Exception) {
+                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
             }
         }
         disableCustomTimeButton?.setOnClickListener {
@@ -140,38 +132,34 @@ class MainFragment : Fragment(), CoroutineScope {
                 .create()
                 .apply {
                     setOnShowListener {
-                        getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                            launch {
-                                try {
-                                    val rawTime = dialogView.findViewById<EditText>(R.id.time)
-                                        .text
-                                        .toString()
-                                        .toLong()
-                                    val checkedId =
-                                        dialogView.findViewById<RadioGroup>(R.id.timeUnit)
-                                            .checkedRadioButtonId
-                                    val computedTime = if (checkedId == R.id.seconds) rawTime
-                                    else rawTime * 60
-                                    viewModel.disablePiHole(computedTime)
-                                    dismiss()
-                                } catch (e: Exception) {
-                                    dialogView.findViewById<EditText>(R.id.time)
-                                        .error = "Failed to disable Pi-hole"
-                                }
+                        getButton(AlertDialog.BUTTON_POSITIVE).setSuspendingOnClickListener(this@MainFragment) {
+                            try {
+                                val rawTime = dialogView.findViewById<EditText>(R.id.time)
+                                    .text
+                                    .toString()
+                                    .toLong()
+                                val checkedId =
+                                    dialogView.findViewById<RadioGroup>(R.id.timeUnit)
+                                        .checkedRadioButtonId
+                                val computedTime = if (checkedId == R.id.seconds) rawTime
+                                else rawTime * 60
+                                viewModel.disablePiHole(computedTime)
+                                dismiss()
+                            } catch (e: Exception) {
+                                dialogView.findViewById<EditText>(R.id.time)
+                                    .error = "Failed to disable Pi-hole"
                             }
                         }
                     }
                 }
                 .show()
         }
-        disablePermanentlyButton?.setOnClickListener {
-            launch {
-                showProgress(true)
-                try {
-                    viewModel.disablePiHole()
-                } catch (ignored: Exception) {
-                    Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
-                }
+        disablePermanentlyButton?.setSuspendingOnClickListener(this) {
+            showProgress(true)
+            try {
+                viewModel.disablePiHole()
+            } catch (ignored: Exception) {
+                Log.e("Pi-Helper", "Failed to disable Pi-Hole", ignored)
             }
         }
     }

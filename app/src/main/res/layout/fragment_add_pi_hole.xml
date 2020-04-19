@@ -50,11 +50,15 @@
             android:layout_height="wrap_content"
             android:hint="@string/prompt_ip_address">
 
-            <!-- TODO: Figure out how to get this to work for inputting an IP address -->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ipAddress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="pi.hole"
+                android:inputType="text"
+                android:maxLines="1"
+                android:imeOptions="actionGo"
+                tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
