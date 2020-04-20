@@ -6,6 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -66,7 +69,27 @@ class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
     }
 
     private fun showProgress(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) {
+            piHelperLogo.startAnimation(
+                RotateAnimation(
+                    0f,
+                    360f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f
+                ).apply {
+                    duration =
+                        resources.getInteger(android.R.integer.config_longAnimTime).toLong() * 2
+                    repeatMode = Animation.RESTART
+                    repeatCount = Animation.INFINITE
+                    interpolator = LinearInterpolator()
+                    fillAfter = true
+                }
+            )
+        } else {
+            piHelperLogo.clearAnimation()
+        }
         authenticationForm.visibility = if (show) View.GONE else View.VISIBLE
     }
 

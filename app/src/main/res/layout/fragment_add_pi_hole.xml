@@ -24,49 +24,55 @@
             android:tint="@color/colorOnSurface"
             android:transitionName="piHelperLogo" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/connectionForm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/info_scan_network"
-            android:textAlignment="center" />
+            android:orientation="vertical">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/scanNetworkButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/action_scan_network" />
-
-        <include layout="@layout/or_divider" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/info_connect"
-            android:textAlignment="center" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/prompt_ip_address">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ipAddress"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="pi.hole"
-                android:inputType="text"
-                android:maxLines="1"
-                android:imeOptions="actionGo"
-                tools:ignore="HardcodedText" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="@string/info_scan_network"
+                android:textAlignment="center" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/connectButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/action_connect_pihole" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/scanNetworkButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_scan_network" />
 
+            <include layout="@layout/or_divider" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/info_connect"
+                android:textAlignment="center" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_ip_address">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ipAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionGo"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:text="pi.hole"
+                    tools:ignore="HardcodedText" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/connectButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_connect_pihole" />
+
+        </LinearLayout>
     </LinearLayout>
-
 </ScrollView>

@@ -2,12 +2,12 @@ package com.wbrawner.pihelper
 
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ProgressBar
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -42,21 +42,7 @@ class AddPiHoleFragment : Fragment(), CoroutineScope {
             connectButton.performClick()
         }
         connectButton.setSuspendingOnClickListener(this) {
-            val progressDialog = AlertDialog.Builder(it.context)
-                .setTitle(R.string.connecting_to_pihole)
-                .setNegativeButton(R.string.action_cancel) { _, _ ->
-                    cancel()
-                }
-                .setView(FrameLayout(it.context).apply {
-                    addView(ProgressBar(it.context).apply {
-                        layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                            Gravity.CENTER
-                        )
-                    })
-                })
-                .show()
+            showProgress(true)
             if (viewModel.connectToIpAddress(ipAddress.text.toString())) {
                 navController.navigate(
                     R.id.action_addPiHoleFragment_to_retrieveApiKeyFragment,
@@ -71,8 +57,33 @@ class AddPiHoleFragment : Fragment(), CoroutineScope {
                     .setPositiveButton(android.R.string.ok) { _, _ -> }
                     .show()
             }
-            progressDialog.dismiss()
+            showProgress(false)
         }
+    }
+
+    private fun showProgress(show: Boolean) {
+        if (show) {
+            piHelperLogo.startAnimation(
+                RotateAnimation(
+                    0f,
+                    360f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f
+                ).apply {
+                    duration =
+                        resources.getInteger(android.R.integer.config_longAnimTime).toLong() * 2
+                    repeatMode = Animation.RESTART
+                    repeatCount = Animation.INFINITE
+                    interpolator = LinearInterpolator()
+                    fillAfter = true
+                }
+            )
+        } else {
+            piHelperLogo.clearAnimation()
+        }
+        connectionForm.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     override fun onDestroyView() {

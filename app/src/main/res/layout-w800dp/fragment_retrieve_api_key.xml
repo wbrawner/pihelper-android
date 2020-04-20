@@ -5,20 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:fillViewport="true"
+    android:padding="16dp"
     tools:background="@color/colorSurface"
     tools:context=".RetrieveApiKeyFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="400dp"
         android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/piHelperLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:contentDescription="@string/accessibility_description_pi_helper_logo"
             android:src="@drawable/ic_app_logo"
             android:tint="@color/colorOnSurface"
@@ -29,35 +32,49 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/authenticationForm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_min="wrap"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/piHelperLogo">
+            app:layout_constraintTop_toBottomOf="@+id/piHelperLogo">
 
             <TextView
+                android:id="@+id/connectionSuccess"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/info_connection_success"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                app:layout_constraintBottom_toTopOf="@+id/authRequired"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/authRequired"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
                 android:text="@string/info_authentication_required"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                app:layout_constraintBottom_toTopOf="@+id/orDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/connectionSuccess" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordContainer"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_password">
+                android:hint="@string/prompt_password"
+                app:layout_constraintBottom_toTopOf="@+id/connectWithPasswordButton"
+                app:layout_constraintEnd_toStartOf="@+id/orDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/orDivider"
+                app:layout_constraintVertical_chainStyle="packed">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"
@@ -69,17 +86,37 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/connectWithPasswordButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/action_authenticate_password" />
+                android:text="@string/action_authenticate_password"
+                app:layout_constraintBottom_toBottomOf="@+id/orDivider"
+                app:layout_constraintEnd_toStartOf="@+id/orDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/passwordContainer" />
 
-            <include layout="@layout/or_divider" />
+            <include
+                android:id="@+id/orDivider"
+                layout="@layout/or_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="200dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/authRequired" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/apiKeyContainer"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_api_key">
+                android:hint="@string/prompt_api_key"
+                app:layout_constraintBottom_toTopOf="@+id/connectWithApiKeyButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/orDivider"
+                app:layout_constraintTop_toTopOf="@+id/orDivider"
+                app:layout_constraintVertical_chainStyle="packed">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/apiKey"
@@ -91,12 +128,14 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/connectWithApiKeyButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/action_authenticate_api_key" />
+                android:text="@string/action_authenticate_api_key"
+                app:layout_constraintBottom_toBottomOf="@+id/orDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/orDivider"
+                app:layout_constraintTop_toBottomOf="@+id/apiKeyContainer" />
 
-        </LinearLayout>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </ScrollView>
