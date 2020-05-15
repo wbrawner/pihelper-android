@@ -1,2 +1,2 @@
-include ':app', ':piholeclient'
+include ':app', ':piholeclient', ':wearos'
 rootProject.name='Pi-helper'
