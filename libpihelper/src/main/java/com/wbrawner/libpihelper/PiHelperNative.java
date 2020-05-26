@@ -35,6 +35,6 @@ public class PiHelperNative {
     }
 
     static {
-        System.loadLibrary("pihelper");
+        System.loadLibrary("pihelper-android");
     }
 }

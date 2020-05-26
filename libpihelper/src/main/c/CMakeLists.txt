@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.4.1)
 
 include_directories(include)
 
-message("Cmake install libdir: ${CMAKE_CURRENT_SOURCE_DIR}/")
 add_library(CURL
         STATIC
         IMPORTED
@@ -40,28 +39,31 @@ set_target_properties(
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/${ANDROID_ABI}/libjson-c.a)
 
-add_subdirectory(pihelper)
+add_library(PIHELPER
+        STATIC
+        IMPORTED
+        GLOBAL)
+set_target_properties(
+        PIHELPER
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/${ANDROID_ABI}/libpihelper.a)
 
 add_library(
-        pihelper
+        pihelper-android
         SHARED
-        pihelper-android.c
-)
+        pihelper-android.c)
 
-# Include the Android logging library for native code
 find_library(
         log-lib
-        log
-)
+        log)
 
-# Link our library with the Android logging library
+# The ordering below is important, at least regarding the OPENSSL & CRYPTO libraries
 target_link_libraries(
-        pihelper
+        pihelper-android
         ${log-lib}
         z
-        libpihelperstatic
+        PIHELPER
         CURL
-        CRYPTO
         OPENSSL
-        JSONC
-)
+        CRYPTO
+        JSONC)

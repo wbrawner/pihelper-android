@@ -1,4 +1,4 @@
-#include "pihelper/src/pihelper.h"
+#include "pihelper.h"
 #include <jni.h>
 #include <stdio.h>
 
