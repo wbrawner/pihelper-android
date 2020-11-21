@@ -3,8 +3,8 @@ package com.wbrawner.pihelper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
-import com.wbrawner.piholeclient.Status
-import com.wbrawner.piholeclient.StatusProvider
+import com.wbrawner.pihelper.shared.Status
+import com.wbrawner.pihelper.shared.StatusProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlin.coroutines.coroutineContext

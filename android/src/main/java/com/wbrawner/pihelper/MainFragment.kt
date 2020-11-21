@@ -20,7 +20,7 @@ import androidx.core.text.set
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.wbrawner.piholeclient.Status
+import com.wbrawner.pihelper.shared.Status
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -11,8 +11,6 @@ import okio.Buffer
 import org.koin.dsl.module
 import java.util.concurrent.TimeUnit
 
-const val NAME_BASE_URL = "baseUrl"
-
 val piHoleClientModule = module {
     single {
         Moshi.Builder().build()

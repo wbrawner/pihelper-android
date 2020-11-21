@@ -5,8 +5,9 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wbrawner.piholeclient.PiHoleApiService
-import com.wbrawner.piholeclient.VersionResponse
+import com.wbrawner.pihelper.shared.KtorPiHoleApiService
+import com.wbrawner.pihelper.shared.PiHoleApiService
+import com.wbrawner.pihelper.shared.VersionResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.ConnectException
@@ -19,7 +20,7 @@ const val IP_MAX = 255
 
 class AddPiHelperViewModel(
     private val sharedPreferences: SharedPreferences,
-    private val apiService: PiHoleApiService
+    private val apiService: PiHoleApiService = KtorPiHoleApiService()
 ) : ViewModel() {
 
     @Volatile
