@@ -20,7 +20,7 @@ const val IP_MAX = 255
 
 class AddPiHelperViewModel(
     private val sharedPreferences: SharedPreferences,
-    private val apiService: PiHoleApiService = KtorPiHoleApiService()
+    private val apiService: PiHoleApiService
 ) : ViewModel() {
 
     @Volatile

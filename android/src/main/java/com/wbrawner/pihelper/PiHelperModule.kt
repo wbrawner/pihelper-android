@@ -1,12 +1,15 @@
 package com.wbrawner.pihelper
 
 import androidx.security.crypto.EncryptedSharedPreferences
-import com.wbrawner.piholeclient.NAME_BASE_URL
+import com.wbrawner.pihelper.shared.KtorPiHoleApiService
+import com.wbrawner.pihelper.shared.PiHoleApiService
+import com.wbrawner.pihelper.shared.httpClient
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 const val ENCRYPTED_SHARED_PREFS_FILE_NAME = "pihelper.prefs"
+const val NAME_BASE_URL = "baseUrl"
 
 val piHelperModule = module {
     single {
@@ -29,5 +32,9 @@ val piHelperModule = module {
 
     single(named(NAME_BASE_URL)) {
         get<EncryptedSharedPreferences>().getString(KEY_BASE_URL, "")
+    }
+
+    single<PiHoleApiService> {
+        KtorPiHoleApiService(httpClient())
     }
 }

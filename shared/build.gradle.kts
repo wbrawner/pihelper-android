@@ -41,7 +41,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("com.google.android.material:material:1.2.0")
-                implementation("io.ktor:ktor-client-android:$ktor_version")
+                api("io.ktor:ktor-client-android:$ktor_version")
             }
         }
         val androidTest by getting {

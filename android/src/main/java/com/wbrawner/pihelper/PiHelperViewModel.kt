@@ -2,7 +2,7 @@ package com.wbrawner.pihelper
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wbrawner.piholeclient.PiHoleApiService
+import com.wbrawner.pihelper.shared.PiHoleApiService
 import com.wbrawner.pihelper.shared.Status
 import com.wbrawner.pihelper.shared.StatusProvider
 import kotlinx.coroutines.delay
