@@ -41,6 +41,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("com.google.android.material:material:1.2.0")
+                implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
                 api("io.ktor:ktor-client-android:$ktor_version")
             }
         }
@@ -53,6 +54,7 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-ios:$ktor_version")
+                implementation("io.ktor:ktor-client-serialization-native:$ktor_version")
             }
         }
         val iosTest by getting

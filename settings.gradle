@@ -1,2 +1,2 @@
-include ':android', ':piholeclient', ':shared'
+include ':android', ':shared'
 rootProject.name='Pi-helper'

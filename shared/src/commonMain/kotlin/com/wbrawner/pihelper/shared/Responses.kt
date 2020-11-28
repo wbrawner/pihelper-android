@@ -26,22 +26,23 @@ data class Summary(
     @SerialName("queries_cached")
     val queriesCached: String,
     @SerialName("no_data_replies")
-    val noDataReplies: String?,
+    val noDataReplies: String? = null,
     @SerialName("nx_domain_replies")
-    val nxDomainReplies: String?,
+    val nxDomainReplies: String? = null,
     @SerialName("cname_replies")
-    val cnameReplies: String?,
+    val cnameReplies: String? = null,
     @SerialName("in_replies")
-    val ipReplies: String?,
+    val ipReplies: String? = null,
     @SerialName("privacy_level")
     val privacyLevel: String,
     override val status: Status,
     @SerialName("gravity_last_updated")
-    val gravity: Gravity?,
-    val type: String?,
-    val version: Int?
+    val gravity: Gravity? = null,
+    val type: String? = null,
+    val version: Int? = null
 ) : StatusProvider
 
+@Serializable
 enum class Status {
     @SerialName("enabled")
     ENABLED,
