@@ -10,45 +10,47 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_add_pi_hole.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.wbrawner.pihelper.databinding.FragmentAddPiHoleBinding
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.CoroutineContext
 
-class AddPiHoleFragment : Fragment(), CoroutineScope {
+class AddPiHoleFragment : Fragment() {
 
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
     private val viewModel: AddPiHelperViewModel by inject()
+    private var _binding: FragmentAddPiHoleBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_add_pi_hole, container, false)
+    ): View {
+        _binding = FragmentAddPiHoleBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val navController = findNavController()
-        scanNetworkButton.setOnClickListener {
+        binding.scanNetworkButton.setOnClickListener {
             navController.navigate(
                 R.id.action_addPiHoleFragment_to_scanNetworkFragment,
                 null,
                 null,
-                FragmentNavigatorExtras(piHelperLogo to "piHelperLogo")
+                FragmentNavigatorExtras(binding.piHelperLogo to "piHelperLogo")
             )
         }
-        ipAddress.setOnEditorActionListener { _, _, _ ->
-            connectButton.performClick()
+        binding.ipAddress.setOnEditorActionListener { _, _, _ ->
+            binding.connectButton.performClick()
         }
-        connectButton.setSuspendingOnClickListener(this) {
+        binding.connectButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
-            if (viewModel.connectToIpAddress(ipAddress.text.toString())) {
+            if (viewModel.connectToIpAddress(binding.ipAddress.text.toString())) {
                 navController.navigate(
                     R.id.action_addPiHoleFragment_to_retrieveApiKeyFragment,
                     null,
                     null,
-                    FragmentNavigatorExtras(piHelperLogo to "piHelperLogo")
+                    FragmentNavigatorExtras(binding.piHelperLogo to "piHelperLogo")
                 )
             } else {
                 AlertDialog.Builder(view.context)
@@ -63,7 +65,7 @@ class AddPiHoleFragment : Fragment(), CoroutineScope {
 
     private fun showProgress(show: Boolean) {
         if (show) {
-            piHelperLogo.startAnimation(
+            binding.piHelperLogo.startAnimation(
                 RotateAnimation(
                     0f,
                     360f,
@@ -81,13 +83,13 @@ class AddPiHoleFragment : Fragment(), CoroutineScope {
                 }
             )
         } else {
-            piHelperLogo.clearAnimation()
+            binding.piHelperLogo.clearAnimation()
         }
-        connectionForm.visibility = if (show) View.GONE else View.VISIBLE
+        binding.connectionForm.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     override fun onDestroyView() {
-        cancel()
         super.onDestroyView()
+        _binding = null
     }
 }

@@ -11,32 +11,28 @@ import android.view.*
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
-import android.widget.EditText
-import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.text.set
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.wbrawner.pihelper.databinding.DialogDisableCustomTimeBinding
+import com.wbrawner.pihelper.databinding.FragmentMainBinding
 import com.wbrawner.piholeclient.Status
-import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.CoroutineContext
 
-class MainFragment : Fragment(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
+class MainFragment : Fragment() {
     private val viewModel: PiHelperViewModel by inject()
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        launch {
+        lifecycleScope.launch {
             if (arguments?.getBoolean(ACTION_ENABLE) == true) {
                 viewModel.enablePiHole()
             } else if (arguments?.getBoolean(ACTION_DISABLE) == true) {
@@ -44,52 +40,53 @@ class MainFragment : Fragment(), CoroutineScope {
             }
             viewModel.monitorSummary()
         }
-        viewModel.status.observe(this, Observer {
+        viewModel.status.observe(this, {
             showProgress(false)
             val (statusColor, statusText) = when (it) {
                 Status.DISABLED -> {
-                    enableButton?.visibility = View.VISIBLE
-                    disableButtons?.visibility = View.GONE
+                    binding.enableButton.visibility = View.VISIBLE
+                    binding.disableButtons.visibility = View.GONE
                     Pair(R.color.colorDisabled, R.string.status_disabled)
                 }
                 Status.ENABLED -> {
-                    enableButton?.visibility = View.GONE
-                    disableButtons?.visibility = View.VISIBLE
+                    binding.enableButton.visibility = View.GONE
+                    binding.disableButtons.visibility = View.VISIBLE
                     Pair(R.color.colorEnabled, R.string.status_enabled)
                 }
                 else -> {
-                    enableButton?.visibility = View.GONE
-                    disableButtons?.visibility = View.GONE
+                    binding.enableButton.visibility = View.GONE
+                    binding.disableButtons.visibility = View.GONE
                     Pair(R.color.colorUnknown, R.string.status_unknown)
                 }
             }
-            status?.let { textView ->
-                val status = getString(statusText)
-                val statusLabel = getString(R.string.label_status, status)
-                val start = statusLabel.indexOf(status)
-                val end = start + status.length
-                val statusSpan = SpannableString(statusLabel)
-                statusSpan[start, end] = StyleSpan(Typeface.BOLD)
-                statusSpan[start, end] =
-                    ForegroundColorSpan(getColor(textView.context, statusColor))
-                textView.text = statusSpan
-            }
+            val status = getString(statusText)
+            val statusLabel = getString(R.string.label_status, status)
+            val start = statusLabel.indexOf(status)
+            val end = start + status.length
+            val statusSpan = SpannableString(statusLabel)
+            statusSpan[start, end] = StyleSpan(Typeface.BOLD)
+            statusSpan[start, end] =
+                ForegroundColorSpan(getColor(binding.status.context, statusColor))
+            binding.status.text = statusSpan
         })
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_main, container, false)
+    ): View {
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main, menu)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbar)
         showProgress(true)
-        enableButton?.setSuspendingOnClickListener(this) {
+        binding.enableButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
                 viewModel.enablePiHole()
@@ -97,7 +94,7 @@ class MainFragment : Fragment(), CoroutineScope {
                 Log.e("Pi-helper", "Failed to enable Pi-Hole", ignored)
             }
         }
-        disable10SecondsButton?.setSuspendingOnClickListener(this) {
+        binding.disable10SecondsButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
                 viewModel.disablePiHole(10)
@@ -105,7 +102,7 @@ class MainFragment : Fragment(), CoroutineScope {
                 Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
-        disable30SecondsButton?.setSuspendingOnClickListener(this) {
+        binding.disable30SecondsButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
                 viewModel.disablePiHole(30)
@@ -113,7 +110,7 @@ class MainFragment : Fragment(), CoroutineScope {
                 Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
-        disable5MinutesButton?.setSuspendingOnClickListener(this) {
+        binding.disable5MinutesButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
                 viewModel.disablePiHole(300)
@@ -121,40 +118,43 @@ class MainFragment : Fragment(), CoroutineScope {
                 Log.e("Pi-helper", "Failed to disable Pi-Hole", ignored)
             }
         }
-        disableCustomTimeButton?.setOnClickListener {
-            val dialogView = LayoutInflater.from(it.context)
-                .inflate(R.layout.dialog_disable_custom_time, view as ViewGroup, false)
+        binding.disableCustomTimeButton.setOnClickListener {
+            val dialogView = DialogDisableCustomTimeBinding.inflate(
+                LayoutInflater.from(it.context),
+                view as ViewGroup,
+                false
+            )
             AlertDialog.Builder(it.context)
                 .setTitle(R.string.action_disable_custom)
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .setPositiveButton(R.string.action_disable, null)
-                .setView(dialogView)
+                .setView(dialogView.root)
                 .create()
                 .apply {
                     setOnShowListener {
-                        getButton(AlertDialog.BUTTON_POSITIVE).setSuspendingOnClickListener(this@MainFragment) {
+                        getButton(AlertDialog.BUTTON_POSITIVE).setSuspendingOnClickListener(
+                            lifecycleScope
+                        ) {
                             try {
-                                val rawTime = dialogView.findViewById<EditText>(R.id.time)
+                                val rawTime = dialogView.time
                                     .text
                                     .toString()
                                     .toLong()
                                 val checkedId =
-                                    dialogView.findViewById<RadioGroup>(R.id.timeUnit)
-                                        .checkedRadioButtonId
+                                    dialogView.timeUnit.checkedRadioButtonId
                                 val computedTime = if (checkedId == R.id.seconds) rawTime
                                 else rawTime * 60
                                 viewModel.disablePiHole(computedTime)
                                 dismiss()
                             } catch (e: Exception) {
-                                dialogView.findViewById<EditText>(R.id.time)
-                                    .error = "Failed to disable Pi-hole"
+                                dialogView.time.error = "Failed to disable Pi-hole"
                             }
                         }
                     }
                 }
                 .show()
         }
-        disablePermanentlyButton?.setSuspendingOnClickListener(this) {
+        binding.disablePermanentlyButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
                 viewModel.disablePiHole()
@@ -173,8 +173,8 @@ class MainFragment : Fragment(), CoroutineScope {
     }
 
     private fun showProgress(show: Boolean) {
-        progressBar?.visibility = if (show) {
-            progressBar?.startAnimation(RotateAnimation(
+        binding.progressBar.visibility = if (show) {
+            binding.progressBar.startAnimation(RotateAnimation(
                 0f,
                 360f,
                 Animation.RELATIVE_TO_SELF,
@@ -190,10 +190,10 @@ class MainFragment : Fragment(), CoroutineScope {
             })
             View.VISIBLE
         } else {
-            progressBar?.clearAnimation()
+            binding.progressBar.clearAnimation()
             View.GONE
         }
-        statusContent?.visibility = if (show) {
+        binding.statusContent.visibility = if (show) {
             View.GONE
         } else {
             View.VISIBLE
@@ -201,7 +201,7 @@ class MainFragment : Fragment(), CoroutineScope {
     }
 
     override fun onDestroyView() {
-        coroutineContext[Job]?.cancel()
+        _binding = null
         super.onDestroyView()
     }
 

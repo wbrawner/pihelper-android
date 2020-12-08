@@ -23,6 +23,6 @@
     </style>
 
     <style name="AppTheme.Button.Red" parent="AppTheme.Button">
-        <item name="backgroundTint">@color/colorRedDark</item>
+        <item name="backgroundTint">@color/colorAccent</item>
     </style>
 </resources>

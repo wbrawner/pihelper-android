@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import com.wbrawner.pihelper.MainFragment.Companion.ACTION_DISABLE
 import com.wbrawner.pihelper.MainFragment.Companion.ACTION_ENABLE
 import com.wbrawner.pihelper.MainFragment.Companion.EXTRA_DURATION
+import com.wbrawner.pihelper.databinding.ActivityMainBinding
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
@@ -19,10 +20,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         window.setBackgroundDrawable(ColorDrawable(getColor(R.color.colorSurface)))
-        val analyticsBundle = Bundle()
-        analyticsBundle.putString("intent_action", intent.action)
         val args = when (intent.action) {
             ACTION_ENABLE -> {
                 if (addPiHoleViewModel.apiKey == null) {

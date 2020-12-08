@@ -16,23 +16,23 @@ import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
-import kotlinx.android.synthetic.main.fragment_scan_network.*
-import kotlinx.coroutines.CoroutineScope
+import com.wbrawner.pihelper.databinding.FragmentScanNetworkBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.net.Inet4Address
-import kotlin.coroutines.CoroutineContext
 
-class ScanNetworkFragment : Fragment(), CoroutineScope {
+class ScanNetworkFragment : Fragment() {
 
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
     private val viewModel: AddPiHelperViewModel by inject()
+    private var _binding: FragmentScanNetworkBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +60,15 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_scan_network, container, false)
+    ): View {
+        _binding = FragmentScanNetworkBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.scanningIp.observe(viewLifecycleOwner, Observer {
-            ipAddress?.text = it
+            binding.ipAddress.text = it
         })
         viewModel.piHoleIpAddress.observe(viewLifecycleOwner, Observer { ipAddress ->
             if (ipAddress == null) {
@@ -78,7 +81,7 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
                     .show()
                 return@Observer
             }
-            piHelperLogo?.animation?.let {
+            binding.piHelperLogo.animation?.let {
                 it.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationRepeat(animation: Animation?) {
                     }
@@ -93,7 +96,7 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
                 it.repeatCount = 0
             } ?: navigateToApiKeyScreen()
         })
-        launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             if (BuildConfig.DEBUG && Build.MODEL == "Android SDK built for x86") {
                 // For emulators, just begin scanning the host machine directly
                 viewModel.beginScanning("10.0.2.2")
@@ -120,9 +123,9 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
                     }
             }
         }
-        launch {
+        lifecycleScope.launch {
             delay(500)
-            if (piHelperLogo?.animation == null) {
+            if (binding.piHelperLogo.animation == null) {
                 animatePiHelperLogo()
             }
         }
@@ -130,7 +133,7 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
 
     private fun navigateToApiKeyScreen() {
         val extras = FragmentNavigatorExtras(
-            piHelperLogo to "piHelperLogo"
+            binding.piHelperLogo to "piHelperLogo"
         )
 
         findNavController().navigate(
@@ -142,13 +145,13 @@ class ScanNetworkFragment : Fragment(), CoroutineScope {
     }
 
     override fun onDestroyView() {
-        piHelperLogo.clearAnimation()
-        cancel()
+        binding.piHelperLogo.clearAnimation()
+        _binding = null
         super.onDestroyView()
     }
 
     private fun animatePiHelperLogo() {
-        piHelperLogo?.startAnimation(
+        binding.piHelperLogo.startAnimation(
             RotateAnimation(
                 0f,
                 360f,

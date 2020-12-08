@@ -11,17 +11,16 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
-import kotlinx.android.synthetic.main.fragment_retrieve_api_key.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.wbrawner.pihelper.databinding.FragmentRetrieveApiKeyBinding
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.CoroutineContext
 
-class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
+class RetrieveApiKeyFragment : Fragment() {
     private val viewModel: AddPiHelperViewModel by inject()
+    private var _binding: FragmentRetrieveApiKeyBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,32 +35,35 @@ class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_retrieve_api_key, container, false)
+    ): View {
+        _binding = FragmentRetrieveApiKeyBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        password.setOnEditorActionListener { _, _, _ ->
-            connectWithPasswordButton.performClick()
+        binding.password.setOnEditorActionListener { _, _, _ ->
+            binding.connectWithPasswordButton.performClick()
         }
-        connectWithPasswordButton.setSuspendingOnClickListener(this) {
+        binding.connectWithPasswordButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
-                viewModel.authenticateWithPassword(password.text.toString())
+                viewModel.authenticateWithPassword(binding.password.text.toString())
             } catch (ignored: Exception) {
                 Log.e("Pi-helper", "Failed to authenticate with password", ignored)
-                password.error = "Failed to authenticate with given password. Please verify " +
+                binding.password.error = "Failed to authenticate with given password. Please verify " +
                         "you've entered it correctly and try again."
                 showProgress(false)
             }
         }
-        apiKey.setOnEditorActionListener { _, _, _ ->
-            connectWithApiKeyButton.performClick()
+        binding.apiKey.setOnEditorActionListener { _, _, _ ->
+            binding.connectWithApiKeyButton.performClick()
         }
-        connectWithApiKeyButton.setSuspendingOnClickListener(this) {
+        binding.connectWithApiKeyButton.setSuspendingOnClickListener(lifecycleScope) {
             showProgress(true)
             try {
-                viewModel.authenticateWithApiKey(apiKey.text.toString())
+                viewModel.authenticateWithApiKey(binding.apiKey.text.toString())
             } catch (ignored: Exception) {
-                apiKey.error = "Failed to authenticate with given API key. Please verify " +
+                binding.apiKey.error = "Failed to authenticate with given API key. Please verify " +
                         "you've entered it correctly and try again."
                 showProgress(false)
             }
@@ -70,7 +72,7 @@ class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
 
     private fun showProgress(show: Boolean) {
         if (show) {
-            piHelperLogo.startAnimation(
+            binding.piHelperLogo.startAnimation(
                 RotateAnimation(
                     0f,
                     360f,
@@ -88,13 +90,13 @@ class RetrieveApiKeyFragment : Fragment(), CoroutineScope {
                 }
             )
         } else {
-            piHelperLogo.clearAnimation()
+            binding.piHelperLogo.clearAnimation()
         }
-        authenticationForm.visibility = if (show) View.GONE else View.VISIBLE
+        binding.authenticationForm.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     override fun onDestroyView() {
-        cancel()
+        _binding = null
         super.onDestroyView()
     }
 }

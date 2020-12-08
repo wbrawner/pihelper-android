@@ -15,16 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.pihelper.MainActivity.Companion.ACTION_FORGET_PIHOLE
-import kotlinx.android.synthetic.main.fragment_info.*
-import kotlinx.android.synthetic.main.fragment_main.toolbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.wbrawner.pihelper.databinding.FragmentInfoBinding
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.CoroutineContext
 
-class InfoFragment : Fragment(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
+class InfoFragment : Fragment() {
     private val viewModel: AddPiHelperViewModel by inject()
+    private var _binding: FragmentInfoBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,20 +31,23 @@ class InfoFragment : Fragment(), CoroutineScope {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_info, container, false)
+    ): View {
+        _binding = FragmentInfoBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbar)
         (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as? AppCompatActivity)?.supportActionBar?.setTitle(R.string.action_settings)
         val html = getString(R.string.content_info)
         @Suppress("DEPRECATION")
-        infoContent?.text = if (Build.VERSION.SDK_INT < 24)
+        binding.infoContent.text = if (Build.VERSION.SDK_INT < 24)
             Html.fromHtml(html)
         else
             Html.fromHtml(html, 0)
-        infoContent.movementMethod = LinkMovementMethod.getInstance()
-        forgetPiHoleButton?.setOnClickListener {
+        binding.infoContent.movementMethod = LinkMovementMethod.getInstance()
+        binding.forgetPiHoleButton.setOnClickListener {
             AlertDialog.Builder(view.context)
                 .setTitle(R.string.confirm_forget_pihole)
                 .setMessage(R.string.warning_cannot_be_undone)
@@ -76,5 +76,10 @@ class InfoFragment : Fragment(), CoroutineScope {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
