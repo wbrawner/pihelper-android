@@ -15,21 +15,21 @@ repositories {
     jcenter()
     mavenCentral()
 }
-val ktor_version = "+"
 kotlin {
     android()
     ios {
         binaries {
             framework {
-                baseName = "shared"
+                baseName = "pihelper"
             }
         }
     }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-core:$ktor_version")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:+")
+                implementation("io.ktor:ktor-client-core:1.4.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+                implementation("io.ktor:ktor-client-serialization:1.4.2")
             }
         }
         val commonTest by getting {
@@ -41,8 +41,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("com.google.android.material:material:1.2.0")
-                implementation("io.ktor:ktor-client-serialization-jvm:$ktor_version")
-                api("io.ktor:ktor-client-android:$ktor_version")
+                api("io.ktor:ktor-client-android:1.4.2")
             }
         }
         val androidTest by getting {
@@ -53,8 +52,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-ios:$ktor_version")
-                implementation("io.ktor:ktor-client-serialization-native:$ktor_version")
+                implementation("io.ktor:ktor-client-ios:1.4.2")
             }
         }
         val iosTest by getting
