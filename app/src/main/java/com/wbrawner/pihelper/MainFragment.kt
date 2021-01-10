@@ -132,24 +132,25 @@ class MainFragment : Fragment() {
                 .create()
                 .apply {
                     setOnShowListener {
-                        getButton(AlertDialog.BUTTON_POSITIVE).setSuspendingOnClickListener(
-                            lifecycleScope
-                        ) {
-                            try {
-                                val rawTime = dialogView.time
-                                    .text
-                                    .toString()
-                                    .toLong()
-                                val checkedId =
-                                    dialogView.timeUnit.checkedRadioButtonId
-                                val computedTime = if (checkedId == R.id.seconds) rawTime
-                                else rawTime * 60
-                                viewModel.disablePiHole(computedTime)
-                                dismiss()
-                            } catch (e: Exception) {
-                                dialogView.time.error = "Failed to disable Pi-hole"
+                        getButton(AlertDialog.BUTTON_POSITIVE)
+                            .setSuspendingOnClickListener(lifecycleScope) {
+                                try {
+                                    val rawTime = dialogView.time
+                                        .text
+                                        .toString()
+                                        .toLong()
+                                    val computedTime =
+                                        when (dialogView.timeUnit.checkedRadioButtonId) {
+                                            R.id.seconds -> rawTime
+                                            R.id.minutes -> rawTime * 60
+                                            else -> rawTime * 3600
+                                        }
+                                    viewModel.disablePiHole(computedTime)
+                                    dismiss()
+                                } catch (e: Exception) {
+                                    dialogView.time.error = "Failed to disable Pi-hole"
+                                }
                             }
-                        }
                     }
                 }
                 .show()
