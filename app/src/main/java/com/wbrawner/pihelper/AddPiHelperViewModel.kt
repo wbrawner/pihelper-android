@@ -19,9 +19,8 @@ class AddPiHelperViewModel(
     private val configHelper: ConfigPersistenceHelper
 ) : ViewModel() {
 
-    suspend fun getBaseUrl() = configHelper.getHost()
-
-    suspend fun getApiKey() = configHelper.getApiKey()
+    val baseUrl: String? = configHelper.host
+    val apiKey: String? = configHelper.apiKey
 
     val piHoleIpAddress = MutableLiveData<String?>()
     val scanningIp = MutableLiveData<String?>()
@@ -67,7 +66,7 @@ class AddPiHelperViewModel(
     suspend fun connectToIpAddress(ipAddress: String): Boolean {
         val status: Status? = withContext(Dispatchers.IO) {
             try {
-                configHelper.setHost(ipAddress)
+                configHelper.host = ipAddress
                 apiService.getStatus()
             } catch (ignored: ConnectException) {
                 null
@@ -87,19 +86,19 @@ class AddPiHelperViewModel(
         }
     }
 
-    suspend fun authenticateWithPassword(password: String) {
+    fun authenticateWithPassword(password: String) {
         configHelper.setPassword(password)
         configHelper.saveConfig()
         authenticate()
     }
 
-    suspend fun authenticateWithApiKey(apiKey: String) {
-        configHelper.setApiKey(apiKey)
+    fun authenticateWithApiKey(apiKey: String) {
+        configHelper.apiKey = apiKey
         configHelper.saveConfig()
         authenticate()
     }
 
-    private suspend fun authenticate() {
+    private fun authenticate() {
         try {
             // This uses the topItems endpoint to test that the API key is working since it requires
             // authentication and is fairly simple to determine whether or not the request was
@@ -113,7 +112,7 @@ class AddPiHelperViewModel(
         }
     }
 
-    suspend fun forgetPihole() {
+    fun forgetPihole() {
         configHelper.deleteConfig()
     }
 }

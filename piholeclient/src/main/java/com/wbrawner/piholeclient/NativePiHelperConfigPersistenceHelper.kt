@@ -3,7 +3,8 @@ package com.wbrawner.piholeclient
 import com.wbrawner.libpihelper.PiHelperNative
 import java.io.File
 
-class NativePiHelperConfigPersistenceHelper(private val configFile: File): ConfigPersistenceHelper {
+class NativePiHelperConfigPersistenceHelper(private val configFile: File) :
+    ConfigPersistenceHelper {
     init {
         if (configFile.exists()) {
             PiHelperNative.readConfig(configFile.absolutePath)
@@ -12,27 +13,27 @@ class NativePiHelperConfigPersistenceHelper(private val configFile: File): Confi
         }
     }
 
-    override suspend fun getHost(): String? = PiHelperNative.getHost()
+    override var host: String?
+        get() = PiHelperNative.getHost()
+        set(value) {
+            PiHelperNative.setHost(value)
+        }
 
-    override suspend fun setHost(host: String?) {
-        PiHelperNative.setHost(host)
-    }
+    override var apiKey: String?
+        get() = PiHelperNative.getApiKey()
+        set(value) {
+            PiHelperNative.setApiKey(value)
+        }
 
-    override suspend fun getApiKey(): String? = PiHelperNative.getApiKey()
-
-    override suspend fun setApiKey(apiKey: String?) {
-        PiHelperNative.setApiKey(apiKey)
-    }
-
-    override suspend fun setPassword(password: String?) {
+    override fun setPassword(password: String?) {
         PiHelperNative.setPassword(password)
     }
 
-    override suspend fun saveConfig() {
+    override fun saveConfig() {
         PiHelperNative.saveConfig(configFile.absolutePath)
     }
 
-    override suspend fun deleteConfig() {
+    override fun deleteConfig() {
         PiHelperNative.cleanup()
         configFile.delete()
         PiHelperNative.initConfig()
