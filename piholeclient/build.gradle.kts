@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    compileSdk = 29
+    compileSdk = libs.versions.maxSdk.get().toInt()
     defaultConfig {
-        minSdk = 23
-        targetSdk = 29
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.maxSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -30,17 +30,14 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${rootProject.ext["kotlinVersion"]}")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.ext["kotlinVersion"]}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext["coroutinesVersion"]}")
-    implementation("org.koin:koin-core:${rootProject.ext["koinVersion"]}")
-    implementation("com.squareup.okhttp3:okhttp:${rootProject.ext["okHttpVersion"]}")
-    implementation("com.squareup.okhttp3:logging-interceptor:${rootProject.ext["okHttpVersion"]}")
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.core:core-ktx:1.1.0")
-    implementation("com.squareup.moshi:moshi:1.9.2")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
-    testImplementation("junit:junit:4.12")
-    androidTestImplementation("androidx.test.ext:junit:1.1.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    implementation("io.insert-koin:koin-core:${libs.versions.koin.get()}")
+    implementation("com.squareup.okhttp3:okhttp:${libs.versions.okhttp.get()}")
+    implementation("com.squareup.okhttp3:logging-interceptor:${libs.versions.okhttp.get()}")
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.bundles.coroutines)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.moshi.core)
+    kapt(libs.moshi.codegen)
+    testImplementation(libs.junit)
 }
