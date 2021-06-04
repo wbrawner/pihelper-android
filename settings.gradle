@@ -1,2 +1,0 @@
-include ':app', ':piholeclient'
-rootProject.name='Pi-helper'
