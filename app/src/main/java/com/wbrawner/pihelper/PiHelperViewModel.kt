@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
 import com.wbrawner.piholeclient.Status
 import com.wbrawner.piholeclient.StatusProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 
-class PiHelperViewModel(
+@HiltViewModel
+class PiHelperViewModel @Inject constructor(
     private val apiService: PiHoleApiService
 ) : ViewModel() {
     val status = MutableLiveData<Status>()

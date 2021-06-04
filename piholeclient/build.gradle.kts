@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -30,14 +31,15 @@ android {
 }
 
 dependencies {
-    implementation("io.insert-koin:koin-core:${libs.versions.koin.get()}")
-    implementation("com.squareup.okhttp3:okhttp:${libs.versions.okhttp.get()}")
+    api("com.squareup.okhttp3:okhttp:${libs.versions.okhttp.get()}")
     implementation("com.squareup.okhttp3:logging-interceptor:${libs.versions.okhttp.get()}")
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.bundles.coroutines)
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.android.kapt)
     implementation(libs.kotlin.reflect)
-    implementation(libs.moshi.core)
+    api(libs.moshi.core)
     kapt(libs.moshi.codegen)
     testImplementation(libs.junit)
 }

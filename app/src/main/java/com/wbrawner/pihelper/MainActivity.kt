@@ -3,17 +3,20 @@ package com.wbrawner.pihelper
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.wbrawner.pihelper.MainFragment.Companion.ACTION_DISABLE
 import com.wbrawner.pihelper.MainFragment.Companion.ACTION_ENABLE
 import com.wbrawner.pihelper.MainFragment.Companion.EXTRA_DURATION
 import com.wbrawner.pihelper.databinding.ActivityMainBinding
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val addPiHoleViewModel: AddPiHelperViewModel by inject()
+    private val addPiHoleViewModel: AddPiHelperViewModel by viewModels()
     private val navController: NavController by lazy {
         findNavController(R.id.content_main)
     }
@@ -22,7 +25,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        window.setBackgroundDrawable(ColorDrawable(getColor(R.color.colorSurface)))
+        window.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorSurface
+                )
+            )
+        )
         val args = when (intent.action) {
             ACTION_ENABLE -> {
                 if (addPiHoleViewModel.apiKey == null) {

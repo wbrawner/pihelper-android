@@ -10,15 +10,17 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.pihelper.databinding.FragmentAddPiHoleBinding
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddPiHoleFragment : Fragment() {
 
-    private val viewModel: AddPiHelperViewModel by inject()
+    private val viewModel: AddPiHelperViewModel by activityViewModels()
     private var _binding: FragmentAddPiHoleBinding? = null
     private val binding get() = _binding!!
 

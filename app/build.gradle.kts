@@ -5,6 +5,8 @@ import java.io.FileNotFoundException
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 val keystoreProperties = Properties()
@@ -64,7 +66,8 @@ android {
 dependencies {
     implementation(project(":piholeclient"))
     implementation(libs.bundles.coroutines)
-    implementation("io.insert-koin:koin-androidx-viewmodel:${libs.versions.koin.get()}")
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.android.kapt)
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

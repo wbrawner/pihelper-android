@@ -15,6 +15,7 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -22,15 +23,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.wbrawner.pihelper.databinding.FragmentScanNetworkBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import java.net.Inet4Address
 
+@AndroidEntryPoint
 class ScanNetworkFragment : Fragment() {
 
-    private val viewModel: AddPiHelperViewModel by inject()
+    private val viewModel: AddPiHelperViewModel by activityViewModels()
     private var _binding: FragmentScanNetworkBinding? = null
     private val binding get() = _binding!!
 

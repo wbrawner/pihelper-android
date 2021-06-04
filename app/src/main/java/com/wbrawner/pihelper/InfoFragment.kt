@@ -13,13 +13,15 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.pihelper.MainActivity.Companion.ACTION_FORGET_PIHOLE
 import com.wbrawner.pihelper.databinding.FragmentInfoBinding
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class InfoFragment : Fragment() {
-    private val viewModel: AddPiHelperViewModel by inject()
+    private val viewModel: AddPiHelperViewModel by activityViewModels()
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
 

@@ -7,17 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
 import com.wbrawner.piholeclient.VersionResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.ConnectException
 import java.net.SocketTimeoutException
+import javax.inject.Inject
 
 const val KEY_BASE_URL = "baseUrl"
 const val KEY_API_KEY = "apiKey"
 const val IP_MIN = 0
 const val IP_MAX = 255
 
-class AddPiHelperViewModel(
+@HiltViewModel
+class AddPiHelperViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val apiService: PiHoleApiService
 ) : ViewModel() {

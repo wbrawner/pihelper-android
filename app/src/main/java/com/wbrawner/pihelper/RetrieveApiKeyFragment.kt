@@ -10,15 +10,17 @@ import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.wbrawner.pihelper.databinding.FragmentRetrieveApiKeyBinding
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RetrieveApiKeyFragment : Fragment() {
-    private val viewModel: AddPiHelperViewModel by inject()
+    private val viewModel: AddPiHelperViewModel by activityViewModels()
     private var _binding: FragmentRetrieveApiKeyBinding? = null
     private val binding get() = _binding!!
 
@@ -50,8 +52,9 @@ class RetrieveApiKeyFragment : Fragment() {
                 viewModel.authenticateWithPassword(binding.password.text.toString())
             } catch (ignored: Exception) {
                 Log.e("Pi-helper", "Failed to authenticate with password", ignored)
-                binding.password.error = "Failed to authenticate with given password. Please verify " +
-                        "you've entered it correctly and try again."
+                binding.password.error =
+                    "Failed to authenticate with given password. Please verify " +
+                            "you've entered it correctly and try again."
                 showProgress(false)
             }
         }

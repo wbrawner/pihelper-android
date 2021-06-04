@@ -2,23 +2,31 @@ package com.wbrawner.piholeclient
 
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
-import org.koin.dsl.module
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 const val NAME_BASE_URL = "baseUrl"
 
-val piHoleClientModule = module {
-    single {
-        Moshi.Builder().build()
-    }
+@Module
+@InstallIn(SingletonComponent::class)
+object PiHoleClientModule {
+    @Provides
+    @Singleton
+    fun providesMoshi(): Moshi = Moshi.Builder().build()
 
-    single {
+    @Provides
+    @Singleton
+    fun providesOkHttpClient(): OkHttpClient {
         val client = OkHttpClient.Builder()
             .connectTimeout(500, TimeUnit.MILLISECONDS)
             .cookieJar(object : CookieJar {
@@ -53,10 +61,11 @@ val piHoleClientModule = module {
                 }
             )
         }
-        client.build()
+        return client.build()
     }
 
-    single<PiHoleApiService> {
-        OkHttpPiHoleApiService(get(), get())
-    }
+    @Provides
+    @Singleton
+    fun providesPiHoleApiService(okHttpClient: OkHttpClient, moshi: Moshi): PiHoleApiService =
+        OkHttpPiHoleApiService(okHttpClient, moshi)
 }
