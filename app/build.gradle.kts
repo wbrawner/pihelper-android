@@ -59,14 +59,16 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        viewBinding = true
+        compose = true
     }
 }
 
 dependencies {
     implementation(project(":piholeclient"))
     implementation(libs.bundles.coroutines)
+    implementation(libs.bundles.compose)
     implementation(libs.hilt.android.core)
+    implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.android.kapt)
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
@@ -78,7 +80,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.test.ext)
     androidTestImplementation(libs.espresso)
-    implementation(libs.bundles.navigation)
-    implementation(libs.bundles.lifecycle)
 }
 

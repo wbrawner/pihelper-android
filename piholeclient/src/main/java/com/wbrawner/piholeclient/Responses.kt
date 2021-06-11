@@ -48,7 +48,11 @@ enum class Status {
     @Json(name = "enabled")
     ENABLED,
     @Json(name = "disabled")
-    DISABLED
+    DISABLED,
+    @Transient
+    LOADING,
+    @Transient
+    UNKNOWN
 }
 
 @JsonClass(generateAdapter = true)

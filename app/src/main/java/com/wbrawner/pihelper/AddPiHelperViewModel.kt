@@ -3,12 +3,12 @@ package com.wbrawner.pihelper
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
 import com.wbrawner.piholeclient.VersionResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -48,11 +48,10 @@ class AddPiHelperViewModel @Inject constructor(
         apiService.apiKey = this.apiKey
     }
 
-    val piHoleIpAddress = MutableLiveData<String?>()
-    val scanningIp = MutableLiveData<String?>()
-    val authenticated = MutableLiveData<Boolean>()
+    val loadingMessage = MutableStateFlow<String?>(null)
+    val errorMessage = MutableStateFlow<String?>(null)
 
-    suspend fun beginScanning(deviceIpAddress: String) {
+    suspend fun beginScanning(deviceIpAddress: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         val addressParts = deviceIpAddress.split(".").toMutableList()
         var chunks = 1
         // If the Pi-hole is correctly set up, then there should be a special host for it as
@@ -71,20 +70,25 @@ class AddPiHelperViewModel @Inject constructor(
             }
             chunks *= 2
         }
-        scan(ipAddresses)
+        if (scan(ipAddresses)) {
+            onSuccess()
+        } else {
+            onFailure()
+        }
     }
 
-    private suspend fun scan(ipAddresses: MutableList<String>) {
+    private suspend fun scan(ipAddresses: MutableList<String>): Boolean {
         if (ipAddresses.isEmpty()) {
-            scanningIp.postValue(null)
-            piHoleIpAddress.postValue(null)
-            return
+            loadingMessage.value = null
+            return false
         }
 
         val ipAddress = ipAddresses.removeAt(0)
-        scanningIp.postValue(ipAddress)
-        if (!connectToIpAddress(ipAddress)) {
+        loadingMessage.value = "Scanning $ipAddress..."
+        return if (!connectToIpAddress(ipAddress)) {
             scan(ipAddresses)
+        } else {
+            true
         }
     }
 
@@ -102,33 +106,32 @@ class AddPiHelperViewModel @Inject constructor(
                 null
             }
         }
-        return if (version == null) {
-            false
-        } else {
-            piHoleIpAddress.postValue(ipAddress)
+        if (version != null) {
             baseUrl = ipAddress
-            true
+            return true
         }
+        return false
     }
 
-    suspend fun authenticateWithPassword(password: String) {
+    suspend fun authenticateWithPassword(password: String): Boolean {
         // The Pi-hole API key is just the web password hashed twice with SHA-256
-        authenticateWithApiKey(password.hash().hash())
+        return authenticateWithApiKey(password.hash().hash())
     }
 
-    suspend fun authenticateWithApiKey(apiKey: String) {
+    suspend fun authenticateWithApiKey(apiKey: String): Boolean {
         // This uses the topItems endpoint to test that the API key is working since it requires
         // authentication and is fairly simple to determine whether or not the request was
         // successful
+        errorMessage.value = null
         apiService.apiKey = apiKey
-        try {
+        return try {
             apiService.getTopItems()
             this.apiKey = apiKey
-            authenticated.postValue(true)
+            true
         } catch (e: Exception) {
             Log.e("Pi-helper", "Unable to authenticate with API key", e)
-            authenticated.postValue(false)
-            throw e
+            errorMessage.value = "Authentication failed"
+            false
         }
     }
 

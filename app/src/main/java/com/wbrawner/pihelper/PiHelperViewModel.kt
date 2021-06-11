@@ -1,12 +1,13 @@
 package com.wbrawner.pihelper
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.piholeclient.PiHoleApiService
 import com.wbrawner.piholeclient.Status
 import com.wbrawner.piholeclient.StatusProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
@@ -15,7 +16,8 @@ import kotlin.coroutines.coroutineContext
 class PiHelperViewModel @Inject constructor(
     private val apiService: PiHoleApiService
 ) : ViewModel() {
-    val status = MutableLiveData<Status>()
+    private val _status = MutableStateFlow(Status.LOADING)
+    val status = _status.asStateFlow()
     private var action: (suspend () -> StatusProvider)? = null
         get() = field ?: defaultAction
     private var defaultAction = suspend {
@@ -25,7 +27,7 @@ class PiHelperViewModel @Inject constructor(
     suspend fun monitorSummary() {
         while (coroutineContext.isActive) {
             try {
-                status.postValue(action!!.invoke().status)
+                _status.value = action!!.invoke().status
                 action = null
             } catch (ignored: Exception) {
                 break
@@ -34,13 +36,15 @@ class PiHelperViewModel @Inject constructor(
         }
     }
 
-    suspend fun enablePiHole() {
+    fun enablePiHole() {
+        _status.value = Status.LOADING
         action = {
             apiService.enable()
         }
     }
 
-    suspend fun disablePiHole(duration: Long? = null) {
+    fun disablePiHole(duration: Long? = null) {
+        _status.value = Status.LOADING
         action = {
             apiService.disable(duration)
         }
