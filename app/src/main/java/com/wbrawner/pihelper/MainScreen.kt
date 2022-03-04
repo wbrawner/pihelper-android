@@ -133,10 +133,10 @@ fun DisableControls(viewModel: PiHelperViewModel = hiltViewModel()) {
         PrimaryButton("Disable for 10 seconds") { viewModel.disablePiHole(10) }
         PrimaryButton("Disable for 30 seconds") { viewModel.disablePiHole(30) }
         PrimaryButton("Disable for 5 minutes") { viewModel.disablePiHole(300) }
-        PrimaryButton("Disable for custom time") { /* TODO: Show dialog for custom input */ }
+        PrimaryButton("Disable for custom time") { setDialogVisible(true) }
         PrimaryButton("Disable permanently") { viewModel.disablePiHole() }
         CustomTimeDialog(dialogVisible, setDialogVisible) {
-
+            viewModel.disablePiHole(it)
         }
     }
 }
@@ -173,44 +173,50 @@ fun CustomTimeDialog(
         mutableStateOf(Duration.SECONDS)
     }
     AlertDialog(
+        shape = MaterialTheme.shapes.small,
         onDismissRequest = { setVisible(false) },
         buttons = {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
                 TextButton({ setVisible(false) }) {
                     Text("Cancel")
                 }
                 TextButton(onClick = {
                     // TODO: Move this math to the viewmodel or repository
-                    onTimeSelected(time * (60.0.pow(duration.ordinal)).roundToLong())
+                    onTimeSelected(time.toLong() * (60.0.pow(duration.ordinal)).roundToLong())
                     setVisible(false)
                 }) {
                     Text("Disable")
                 }
             }
         },
-        title = { Text("Disable for custom time") },
+        title = { Text("Disable for custom time: ") },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextField(
-                    value = time.toString(),
-                    onValueChange = { setTime(it.toLong()) },
+                OutlinedTextField(
+                    value = time,
+                    onValueChange = { setTime(it) },
                     placeholder = { Text("Time to disable") }
                 )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    DurationRadio(
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    DurationToggle(
                         selected = duration == Duration.SECONDS,
                         onClick = { selectDuration(Duration.SECONDS) },
                         text = "Seconds"
                     )
-                    DurationRadio(
+                    DurationToggle(
                         selected = duration == Duration.MINUTES,
                         onClick = { selectDuration(Duration.MINUTES) },
                         text = "Minutes"
                     )
-                    DurationRadio(
+                    DurationToggle(
                         selected = duration == Duration.HOURS,
                         onClick = { selectDuration(Duration.HOURS) },
                         text = "Hours"
@@ -222,13 +228,27 @@ fun CustomTimeDialog(
 }
 
 @Composable
-fun DurationRadio(selected: Boolean, onClick: () -> Unit, text: String) {
-    Row(modifier = Modifier.selectable(selected = selected, onClick = onClick)) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
-        )
-        Text(text = text)
+fun DurationToggle(selected: Boolean, onClick: () -> Unit, text: String) {
+    Row(
+        modifier = Modifier.selectable(selected = selected, onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (selected)
+                    MaterialTheme.colors.primary
+                else
+                    MaterialTheme.colors.background,
+                contentColor = if (selected)
+                    MaterialTheme.colors.onPrimary
+                else
+                    MaterialTheme.colors.primary
+            ),
+            elevation = null
+        ) {
+            Text(text = text)
+        }
     }
 }
 
