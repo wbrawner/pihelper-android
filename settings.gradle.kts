@@ -8,4 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Pi-helper"
 include(":app")
-include(":piholeclient")
+include(":shared")

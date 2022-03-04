@@ -61,10 +61,13 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
+    }
 }
 
 dependencies {
-    implementation(project(":piholeclient"))
+    implementation(project(":shared"))
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.compose)
     implementation(libs.hilt.android.core)

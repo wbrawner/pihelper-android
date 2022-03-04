@@ -1,9 +1,10 @@
 package com.wbrawner.pihelper
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.wbrawner.piholeclient.PiHoleApiService
-import com.wbrawner.piholeclient.Status
-import com.wbrawner.piholeclient.StatusProvider
+import com.wbrawner.pihelper.shared.PiholeAPIService
+import com.wbrawner.pihelper.shared.Status
+import com.wbrawner.pihelper.shared.StatusProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 class PiHelperViewModel @Inject constructor(
-    private val apiService: PiHoleApiService
+    private val apiService: PiholeAPIService
 ) : ViewModel() {
     private val _status = MutableStateFlow(Status.LOADING)
     val status = _status.asStateFlow()
@@ -30,7 +31,7 @@ class PiHelperViewModel @Inject constructor(
                 _status.value = action!!.invoke().status
                 action = null
             } catch (ignored: Exception) {
-                break
+                _status.value = Status.UNKNOWN
             }
             delay(1000)
         }

@@ -55,10 +55,6 @@ fun ScanScreen(navController: NavController, addPiHelperViewModel: AddPiHelperVi
                         ?.linkAddresses
                         ?.filter { !it.address.isLoopbackAddress && it.address is Inet4Address }
                         ?.forEach { address ->
-                            Log.d(
-                                "Pi-helper",
-                                "Found link address: ${address.address.hostName}"
-                            )
                             addPiHelperViewModel.beginScanning(
                                 address.address.hostAddress,
                                 onSuccess,

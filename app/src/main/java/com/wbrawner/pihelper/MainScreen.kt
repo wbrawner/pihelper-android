@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.wbrawner.pihelper.shared.Status
 import com.wbrawner.pihelper.ui.PihelperTheme
-import com.wbrawner.piholeclient.Status
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToLong
@@ -168,7 +168,7 @@ fun CustomTimeDialog(
     onTimeSelected: (Long) -> Unit
 ) {
     if (!visible) return
-    val (time: Long, setTime: (Long) -> Unit) = remember { mutableStateOf(0L) }
+    val (time: String, setTime: (String) -> Unit) = remember { mutableStateOf("10") }
     val (duration, selectDuration: (Duration) -> Unit) = remember {
         mutableStateOf(Duration.SECONDS)
     }

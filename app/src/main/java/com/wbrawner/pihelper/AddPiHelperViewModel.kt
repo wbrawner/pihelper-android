@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
-import com.wbrawner.piholeclient.PiHoleApiService
-import com.wbrawner.piholeclient.VersionResponse
+import com.wbrawner.pihelper.shared.PiholeAPIService
+import com.wbrawner.pihelper.shared.VersionResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,7 @@ const val IP_MAX = 255
 @HiltViewModel
 class AddPiHelperViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-    private val apiService: PiHoleApiService
+    private val apiService: PiholeAPIService
 ) : ViewModel() {
 
     @Volatile

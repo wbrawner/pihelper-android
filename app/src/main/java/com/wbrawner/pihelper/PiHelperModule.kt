@@ -3,7 +3,8 @@ package com.wbrawner.pihelper
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
-import com.wbrawner.piholeclient.NAME_BASE_URL
+import com.wbrawer.pihelper.shared.create
+import com.wbrawner.pihelper.shared.PiholeAPIService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,6 +14,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 const val ENCRYPTED_SHARED_PREFS_FILE_NAME = "pihelper.prefs"
+const val NAME_BASE_URL = "baseUrl"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,4 +35,8 @@ object PiHelperModule {
     @Named(NAME_BASE_URL)
     fun providesBaseUrl(sharedPreferences: SharedPreferences) = sharedPreferences
         .getString(KEY_BASE_URL, "")
+
+    @Provides
+    @Singleton
+    fun providesPiholeAPIService(): PiholeAPIService = PiholeAPIService.create()
 }
