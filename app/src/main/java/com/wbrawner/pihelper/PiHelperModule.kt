@@ -3,8 +3,8 @@ package com.wbrawner.pihelper
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
-import com.wbrawer.pihelper.shared.create
 import com.wbrawner.pihelper.shared.PiholeAPIService
+import com.wbrawner.pihelper.shared.create
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
