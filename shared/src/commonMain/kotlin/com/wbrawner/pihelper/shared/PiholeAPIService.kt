@@ -32,6 +32,11 @@ fun <T: HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
             isLenient = true
         })
     }
+    install(HttpTimeout) {
+        requestTimeoutMillis = 500
+        connectTimeoutMillis = 500
+        socketTimeoutMillis = 500
+    }
 }
 
 class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {

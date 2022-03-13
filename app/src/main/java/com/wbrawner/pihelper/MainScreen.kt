@@ -9,17 +9,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Status
+import com.wbrawner.pihelper.shared.Store
 import com.wbrawner.pihelper.ui.PihelperTheme
 import java.util.*
 import kotlin.math.pow
@@ -27,11 +29,8 @@ import kotlin.math.roundToLong
 
 @ExperimentalAnimationApi
 @Composable
-fun MainScreen(navController: NavController, viewModel: PiHelperViewModel = hiltViewModel()) {
-    LaunchedEffect(key1 = viewModel) {
-        viewModel.monitorSummary()
-    }
-    val status by viewModel.status.collectAsState()
+fun MainScreen(store: Store) {
+    val state = store.state.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -40,7 +39,7 @@ fun MainScreen(navController: NavController, viewModel: PiHelperViewModel = hilt
                 contentColor = MaterialTheme.colors.onBackground,
                 elevation = 0.dp,
                 actions = {
-                    IconButton(onClick = { navController.navigate(Screens.INFO.route) }) {
+                    IconButton(onClick = { store.dispatch(Action.About) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
@@ -59,26 +58,18 @@ fun MainScreen(navController: NavController, viewModel: PiHelperViewModel = hilt
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LoadingSpinner(status == Status.LOADING)
-            AnimatedVisibility(visible = status != Status.LOADING) {
-                StatusLabel(status)
-                if (status == Status.ENABLED) {
-                    DisableControls(viewModel)
-                } else {
-                    EnableControls(viewModel::enablePiHole)
+            LoadingSpinner(state.value.loading)
+            AnimatedVisibility(visible = !state.value.loading) {
+                state.value.status?.let {
+                    StatusLabel(it)
+                    if (it == Status.ENABLED) {
+                        DisableControls { duration -> store.dispatch(Action.Disable(duration)) }
+                    } else {
+                        EnableControls { store.dispatch(Action.Enable) }
+                    }
                 }
             }
         }
-    }
-}
-
-@ExperimentalAnimationApi
-@Composable
-@Preview
-fun MainScreen_Preview() {
-    val navController = rememberNavController()
-    PihelperTheme(false) {
-        MainScreen(navController = navController)
     }
 }
 
@@ -121,7 +112,7 @@ fun EnableControls(onClick: () -> Unit) {
 }
 
 @Composable
-fun DisableControls(viewModel: PiHelperViewModel = hiltViewModel()) {
+fun DisableControls(disable: (duration: Long?) -> Unit) {
     val (dialogVisible, setDialogVisible) = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -130,13 +121,13 @@ fun DisableControls(viewModel: PiHelperViewModel = hiltViewModel()) {
             .padding(start = 16.dp, top = 48.dp, end = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
     ) {
-        PrimaryButton("Disable for 10 seconds") { viewModel.disablePiHole(10) }
-        PrimaryButton("Disable for 30 seconds") { viewModel.disablePiHole(30) }
-        PrimaryButton("Disable for 5 minutes") { viewModel.disablePiHole(300) }
+        PrimaryButton("Disable for 10 seconds") { disable(10) }
+        PrimaryButton("Disable for 30 seconds") { disable(30) }
+        PrimaryButton("Disable for 5 minutes") { disable(300) }
         PrimaryButton("Disable for custom time") { setDialogVisible(true) }
-        PrimaryButton("Disable permanently") { viewModel.disablePiHole() }
+        PrimaryButton("Disable permanently") { disable(null) }
         CustomTimeDialog(dialogVisible, setDialogVisible) {
-            viewModel.disablePiHole(it)
+            disable(it)
         }
     }
 }
@@ -325,5 +316,5 @@ fun EnableControls_DarkPreview() {
 @Composable
 @Preview
 fun DisableControls_Preview() {
-    DisableControls()
+    DisableControls({})
 }

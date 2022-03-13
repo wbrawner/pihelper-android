@@ -17,14 +17,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
+import com.wbrawner.pihelper.shared.Action
+import com.wbrawner.pihelper.shared.Store
 
 @Composable
-fun InfoScreen(navController: NavController, addPiHelperViewModel: AddPiHelperViewModel) {
+fun InfoScreen(store: Store) {
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -77,11 +75,7 @@ fun InfoScreen(navController: NavController, addPiHelperViewModel: AddPiHelperVi
                 uriHandler.openUri(annotation.item)
             }
         }
-        TextButton(onClick = {
-            addPiHelperViewModel.forgetPihole()
-            navController.navigate(Screens.ADD.route)
-            navController.backQueue.clear()
-        }) {
+        TextButton(onClick = { store.dispatch(Action.Forget) }) {
             Text(text = "Forget Pi-hole")
         }
     }

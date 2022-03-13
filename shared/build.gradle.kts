@@ -6,11 +6,10 @@ plugins {
 
 kotlin {
     android()
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
+    val iosX64 = iosX64()
+    val iosArm64 = iosArm64()
+    val iosSimulatorArm64 = iosSimulatorArm64()
+    listOf(iosX64, iosArm64, iosSimulatorArm64).forEach {
         it.binaries.framework {
             baseName = "Pihelper"
         }
@@ -25,6 +24,7 @@ kotlin {
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
+                api(libs.multiplatform.settings)
             }
         }
 

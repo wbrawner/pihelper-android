@@ -16,11 +16,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.wbrawner.pihelper.shared.Action
+import com.wbrawner.pihelper.shared.AuthenticationString
+import com.wbrawner.pihelper.shared.Store
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthScreen(navController: NavController, addPiHelperViewModel: AddPiHelperViewModel) {
+fun AuthScreen(store: Store) {
     val (password: String, setPassword: (String) -> Unit) = remember { mutableStateOf("") }
     val (apiKey: String, setApiKey: (String) -> Unit) = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
@@ -53,11 +55,7 @@ fun AuthScreen(navController: NavController, addPiHelperViewModel: AddPiHelperVi
             visualTransformation = PasswordVisualTransformation()
         )
         PrimaryButton(text = "Authenticate with Password") {
-            coroutineScope.launch {
-                if (addPiHelperViewModel.authenticateWithPassword(password)) {
-                    navController.navigate(Screens.MAIN.route)
-                }
-            }
+            store.dispatch(Action.Authenticate(AuthenticationString.Password(password)))
         }
         OrDivider()
         OutlinedTextField(
@@ -69,9 +67,7 @@ fun AuthScreen(navController: NavController, addPiHelperViewModel: AddPiHelperVi
         )
         PrimaryButton(text = "Authenticate with API Key") {
             coroutineScope.launch {
-                if (addPiHelperViewModel.authenticateWithApiKey(password)) {
-                    navController.navigate(Screens.MAIN.route)
-                }
+                store.dispatch(Action.Authenticate(AuthenticationString.Token(apiKey)))
             }
         }
     }
