@@ -1,9 +1,11 @@
 package com.wbrawner.pihelper
 
+import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsetsController
+import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +24,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var store: Store
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             val isDarkTheme = isSystemInDarkTheme()
@@ -114,6 +119,23 @@ class MainActivity : AppCompatActivity() {
                     composable(Screens.INFO.route) {
                         InfoScreen(store)
                     }
+                }
+            }
+        }
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            listOf(View.SCALE_X, View.SCALE_Y).forEach { axis ->
+                ObjectAnimator.ofFloat(
+                    splashScreenView,
+                    axis,
+                    1f,
+                    0.45f
+                ).apply {
+                    interpolator = AnticipateInterpolator()
+                    duration = 200L
+                    doOnEnd {
+                        splashScreenView.remove()
+                    }
+                    start()
                 }
             }
         }

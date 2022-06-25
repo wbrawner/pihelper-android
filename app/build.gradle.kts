@@ -1,6 +1,6 @@
-import java.util.Properties
 import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.util.*
 
 plugins {
     id("com.android.application")
@@ -75,6 +75,7 @@ dependencies {
     kapt(libs.hilt.android.kapt)
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.splash)
     implementation(libs.material)
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
