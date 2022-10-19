@@ -33,15 +33,19 @@ fun <T: HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
         })
     }
     install(HttpTimeout) {
-        requestTimeoutMillis = 500
-        connectTimeoutMillis = 500
-        socketTimeoutMillis = 500
+        requestTimeoutMillis = 1000
+        connectTimeoutMillis = 1000
+        socketTimeoutMillis = 1000
     }
 }
 
 class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
     override var baseUrl: String? = null
     override var apiKey: String? = null
+        get() {
+            println("apiKey: $field")
+            return field
+        }
 
     override suspend fun getSummary(): Summary = httpClient.get {
         url {

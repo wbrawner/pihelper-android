@@ -8,3 +8,10 @@ buildscript {
         classpath(libs.bundles.plugins)
     }
 }
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}

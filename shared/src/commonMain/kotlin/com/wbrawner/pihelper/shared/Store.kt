@@ -9,13 +9,22 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+enum class Route(val path: String) {
+    CONNECT("connect"),
+    SCAN("scan"),
+    AUTH("auth"),
+    HOME("home"),
+    ABOUT("about"),
+}
+
 data class State(
     val apiKey: String? = null,
     val host: String? = null,
     val status: Status? = null,
     val scanning: String? = null,
     val loading: Boolean = false,
-    val showAbout: Boolean = false,
+    val route: Route = Route.CONNECT,
+    val initialRoute: Route = Route.CONNECT
 )
 
 sealed interface AuthenticationString {
@@ -70,7 +79,9 @@ class Store(
             apiService.apiKey = apiKey
             _state.value = initialState.copy(
                 host = host,
-                apiKey = apiKey
+                apiKey = apiKey,
+                route = Route.HOME,
+                initialRoute = Route.HOME
             )
             monitorChanges()
         } else {
@@ -81,6 +92,7 @@ class Store(
     }
 
     fun dispatch(action: Action) {
+        println(action)
         when (action) {
             is Action.Authenticate -> {
                 when (action.authString) {
@@ -96,31 +108,28 @@ class Store(
             Action.Enable -> enable()
             Action.Forget -> forget()
             is Action.Scan -> scan(action.deviceIp)
-            Action.About -> _state.value = _state.value.copy(showAbout = true)
+            Action.About -> _state.value = _state.value.copy(route = Route.ABOUT)
             Action.Back -> back()
         }
     }
 
     private fun back() {
-        when {
-            _state.value.showAbout -> {
-                _state.value = _state.value.copy(showAbout = false)
+        when (_state.value.route) {
+            Route.ABOUT -> {
+                _state.value = _state.value.copy(route = Route.HOME)
             }
-            _state.value.status != null -> {
+            Route.AUTH -> {
+                _state.value = _state.value.copy(apiKey = null, route = Route.CONNECT)
+            }
+            Route.HOME, Route.CONNECT -> {
                 launch {
                     _effects.emit(Effect.Exit)
                 }
             }
-            _state.value.scanning != null -> {
-                _state.value = _state.value.copy(scanning = null)
+            Route.SCAN -> {
                 scanJob?.cancel("")
                 scanJob = null
-            }
-            _state.value.apiKey != null -> {
-                _state.value = _state.value.copy(apiKey = null)
-            }
-            _state.value.host != null -> {
-                _state.value = _state.value.copy(host = null)
+                _state.value = _state.value.copy(scanning = null, route = Route.CONNECT)
             }
         }
     }
@@ -134,15 +143,16 @@ class Store(
     }
 
     private fun scan(startingIp: String) {
+        _state.value = _state.value.copy(route = Route.SCAN)
         scanJob = launch {
             val subnet = startingIp.substringBeforeLast(".")
-            for (i in 0..255) {
+            repeat(256) { i ->
                 try {
                     val ip = "$subnet.$i"
                     _state.value = _state.value.copy(scanning = ip)
                     apiService.baseUrl = ip
                     apiService.getVersion()
-                    _state.value = _state.value.copy(scanning = null)
+                    _state.value = _state.value.copy(scanning = null, host = ip, route = Route.AUTH)
                     scanJob = null
                     return@launch
                 } catch (ignored: Exception) {
@@ -163,7 +173,8 @@ class Store(
                 settings[KEY_HOST] = host
                 _state.value = _state.value.copy(
                     host = host,
-                    loading = false
+                    loading = false,
+                    route = Route.AUTH,
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
@@ -181,7 +192,8 @@ class Store(
                 settings[KEY_API_KEY] = token
                 _state.value = _state.value.copy(
                     apiKey = token,
-                    loading = false
+                    loading = false,
+                    route = Route.HOME,
                 )
                 monitorChanges()
             } catch (e: Exception) {
@@ -199,11 +211,11 @@ class Store(
         launch {
             try {
                 apiService.enable()
-                getStatus()
-                loadingJob.cancel("")
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
                 _effects.emit(Effect.Error(e.message ?: "Failed to enable Pi-hole"))
+            } finally {
+                loadingJob.cancel("")
             }
         }
     }
@@ -216,24 +228,30 @@ class Store(
         launch {
             try {
                 apiService.disable(duration)
-                getStatus()
-                loadingJob.cancel("")
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
                 _effects.emit(Effect.Error(e.message ?: "Failed to disable Pi-hole"))
+            } finally {
+                loadingJob.cancel("")
             }
         }
     }
 
     private suspend fun getStatus() {
-        // Don't set the state to loading here, otherwise it'll cause blinking animations
+        val loadingJob = launch {
+            delay(500)
+            _state.value = _state.value.copy(loading = true)
+        }
         try {
             val summary = apiService.getSummary()
+            loadingJob.cancel("")
             // TODO: If status is disabled, check for how long
             _state.value = _state.value.copy(status = summary.status, loading = false)
         } catch (e: Exception) {
             _state.value = _state.value.copy(loading = false)
             _effects.emit(Effect.Error(e.message ?: "Failed to load status"))
+        } finally {
+            loadingJob.cancel("")
         }
     }
 
@@ -245,6 +263,8 @@ class Store(
             }
         }
     }
+
+    companion object
 }
 
 expect fun String.hash(): String

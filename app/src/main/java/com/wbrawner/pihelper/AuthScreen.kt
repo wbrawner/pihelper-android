@@ -11,7 +11,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillNode
+import androidx.compose.ui.autofill.AutofillType
+import androidx.compose.ui.composed
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalAutofill
+import androidx.compose.ui.platform.LocalAutofillTree
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +30,7 @@ import com.wbrawner.pihelper.shared.AuthenticationString
 import com.wbrawner.pihelper.shared.Store
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AuthScreen(store: Store) {
     val (password: String, setPassword: (String) -> Unit) = remember { mutableStateOf("") }
@@ -48,7 +58,9 @@ fun AuthScreen(store: Store) {
             textAlign = TextAlign.Center
         )
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .autofill(listOf(AutofillType.Password), onFill = setPassword),
             value = password,
             onValueChange = setPassword,
             label = { Text("Pi-hole Password") },
@@ -59,7 +71,9 @@ fun AuthScreen(store: Store) {
         }
         OrDivider()
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .autofill(listOf(AutofillType.Password), onFill = setApiKey),
             value = apiKey,
             onValueChange = setApiKey,
             label = { Text("Pi-hole API Key") },
@@ -71,4 +85,28 @@ fun AuthScreen(store: Store) {
             }
         }
     }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.autofill(
+    autofillTypes: List<AutofillType>,
+    onFill: ((String) -> Unit),
+) = composed {
+    val autofill = LocalAutofill.current
+    val autofillNode = AutofillNode(onFill = onFill, autofillTypes = autofillTypes)
+    LocalAutofillTree.current += autofillNode
+
+    this
+        .onGloballyPositioned {
+            autofillNode.boundingBox = it.boundsInWindow()
+        }
+        .onFocusChanged { focusState ->
+            autofill?.run {
+                if (focusState.isFocused) {
+                    requestAutofillForNode(autofillNode)
+                } else {
+                    cancelAutofillForNode(autofillNode)
+                }
+            }
+        }
 }

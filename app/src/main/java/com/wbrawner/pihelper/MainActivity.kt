@@ -33,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Effect
+import com.wbrawner.pihelper.shared.Route
 import com.wbrawner.pihelper.shared.Store
 import com.wbrawner.pihelper.ui.PihelperTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,29 +67,9 @@ class MainActivity : AppCompatActivity() {
             }
             val state by store.state.collectAsState()
             val navController = rememberNavController()
-            val startDestination = when {
-                state.host == null -> {
-                    Screens.ADD
-                }
-                state.apiKey == null -> {
-                    Screens.AUTH
-                }
-                else -> {
-                    Screens.MAIN
-                }
-            }
-            LaunchedEffect(state) {
-                if (!state.scanning.isNullOrBlank()) {
-                    navController.navigateIfNotAlreadyThere(Screens.SCAN.route)
-                } else if (state.host == null) {
-                    navController.navigateIfNotAlreadyThere(Screens.ADD.route)
-                } else if (state.apiKey == null) {
-                    navController.navigateIfNotAlreadyThere(Screens.AUTH.route)
-                } else if (state.showAbout) {
-                    navController.navigateIfNotAlreadyThere(Screens.INFO.route)
-                } else if (state.status != null) {
-                    navController.navigateIfNotAlreadyThere(Screens.MAIN.route)
-                }
+            LaunchedEffect(state.route) {
+                println("navigating to ${state.route.name}")
+                navController.navigate(state.route.name)
             }
             val effect by store.effects.collectAsState(initial = Effect.Empty)
             val context = LocalContext.current
@@ -103,20 +84,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             PihelperTheme {
-                NavHost(navController, startDestination = startDestination.route) {
-                    composable(Screens.ADD.route) {
+                NavHost(navController, startDestination = state.initialRoute.name) {
+                    composable(Route.CONNECT.name) {
                         AddScreen(store)
                     }
-                    composable(Screens.SCAN.route) {
+                    composable(Route.SCAN.name) {
                         ScanScreen(store)
                     }
-                    composable(Screens.AUTH.route) {
+                    composable(Route.AUTH.name) {
                         AuthScreen(store)
                     }
-                    composable(Screens.MAIN.route) {
+                    composable(Route.HOME.name) {
                         MainScreen(store)
                     }
-                    composable(Screens.INFO.route) {
+                    composable(Route.ABOUT.name) {
                         InfoScreen(store)
                     }
                 }
@@ -144,14 +125,6 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         store.dispatch(Action.Back)
     }
-}
-
-enum class Screens(val route: String) {
-    ADD("add"),
-    SCAN("scan"),
-    AUTH("auth"),
-    MAIN("main"),
-    INFO("info"),
 }
 
 @Composable

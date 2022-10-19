@@ -1,13 +1,15 @@
 package com.wbrawner.pihelper
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,66 +19,105 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Store
+import com.wbrawner.pihelper.ui.PihelperTheme
 
 @Composable
 fun InfoScreen(store: Store) {
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-    ) {
-        LoadingSpinner()
-        val message = buildAnnotatedString {
-            val text = "Pi-helper was made with ❤ by William Brawner. You can find the source " +
-                    "code or report issues on the GitHub page for the project."
-            val name = text.indexOf("William")
-            val github = text.indexOf("GitHub")
-            append(text)
-            addStringAnnotation(
-                "me",
-                annotation = "https://wbrawner.com",
-                start = name,
-                end = name + 15
-            )
-            addStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colors.primary,
-                    textDecoration = TextDecoration.Underline
-                ),
-                start = name,
-                end = name + 15
-            )
-            addStringAnnotation(
-                "github",
-                annotation = "https://github.com/wbrawner/pihelper-android",
-                start = github,
-                end = github + 11,
-            )
-            addStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colors.primary,
-                    textDecoration = TextDecoration.Underline
-                ),
-                start = github,
-                end = github + 11,
+    InfoScreen(
+        onBackClicked = { store.dispatch(Action.Back) },
+        onForgetPiholeClicked = { store.dispatch(Action.Forget) }
+    )
+}
+
+@Composable
+fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.surface,
+                elevation = 0.dp,
+                title = { Text("About Pi-helper") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClicked) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go back")
+                    }
+                }
             )
         }
-        val uriHandler = LocalUriHandler.current
-        ClickableText(
-            text = message,
-            style = TextStyle.Default.copy(textAlign = TextAlign.Center)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .padding(16.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         ) {
-            message.getStringAnnotations(it, it).firstOrNull()?.let { annotation ->
-                uriHandler.openUri(annotation.item)
+            LoadingSpinner()
+            val message = buildAnnotatedString {
+                val text =
+                    "Pi-helper was made with ❤ by William Brawner. You can find the source " +
+                            "code or report issues on the GitHub page for the project."
+                val name = text.indexOf("William")
+                val github = text.indexOf("GitHub")
+                append(text)
+                addStringAnnotation(
+                    "me",
+                    annotation = "https://wbrawner.com",
+                    start = name,
+                    end = name + 15
+                )
+                addStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colors.primary,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    start = name,
+                    end = name + 15
+                )
+                addStringAnnotation(
+                    "github",
+                    annotation = "https://github.com/wbrawner/pihelper-android",
+                    start = github,
+                    end = github + 11,
+                )
+                addStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colors.primary,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    start = github,
+                    end = github + 11,
+                )
+            }
+            val uriHandler = LocalUriHandler.current
+            ClickableText(
+                text = message,
+                style = TextStyle.Default.copy(
+                    color = MaterialTheme.colors.onSurface,
+                    textAlign = TextAlign.Center
+                ),
+            ) {
+                message.getStringAnnotations(it, it).firstOrNull()?.let { annotation ->
+                    uriHandler.openUri(annotation.item)
+                }
+            }
+            TextButton(onClick = onForgetPiholeClicked) {
+                Text(text = "Forget Pi-hole")
             }
         }
-        TextButton(onClick = { store.dispatch(Action.Forget) }) {
-            Text(text = "Forget Pi-hole")
-        }
+    }
+}
+
+@Composable
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+fun InfoScreen_Preview() {
+    PihelperTheme {
+        InfoScreen({}, {})
     }
 }

@@ -1,6 +1,6 @@
 package com.wbrawner.pihelper
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -59,7 +59,7 @@ fun MainScreen(store: Store) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LoadingSpinner(state.value.loading)
-            AnimatedVisibility(visible = !state.value.loading) {
+            AnimatedContent(targetState = state.value.status, contentAlignment = Alignment.Center) {
                 state.value.status?.let {
                     StatusLabel(it)
                     if (it == Status.ENABLED) {

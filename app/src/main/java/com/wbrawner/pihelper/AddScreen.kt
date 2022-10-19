@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -25,12 +26,18 @@ import com.wbrawner.pihelper.shared.Store
 import com.wbrawner.pihelper.ui.PihelperTheme
 import java.net.Inet4Address
 
+val emulatorBuildModels = listOf(
+    "Android SDK built for x86",
+    "sdk_gphone64_arm64"
+)
+
 @Composable
 fun AddScreen(store: Store) {
     val context = LocalContext.current
     AddPiholeForm(
         scanNetwork = {
-            if (BuildConfig.DEBUG && Build.MODEL == "Android SDK built for x86") {
+            // TODO: This needs to go in the Store
+            if (BuildConfig.DEBUG && emulatorBuildModels.contains(Build.MODEL)) {
                 // For emulators, just begin scanning the host machine directly
                 store.dispatch(Action.Scan("10.0.2.2"))
                 return@AddPiholeForm
@@ -43,17 +50,21 @@ fun AddScreen(store: Store) {
                                 ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
                                 ?: false
                         }
-                        .forEach { network ->
+                        .mapNotNull { network ->
                             connectivityManager.getLinkProperties(network)
                                 ?.linkAddresses
-                                ?.filter { !it.address.isLoopbackAddress && it.address is Inet4Address }
+                                ?.filter {
+                                    !it.address.isLoopbackAddress
+                                            && !it.address.isLinkLocalAddress
+                                            && it.address is Inet4Address
+                                }
                                 ?.mapNotNull { it.address.hostAddress }
                                 ?.forEach {
                                     store.dispatch(Action.Scan(it))
                                 }
                         }
                 }
-
+                ?: Toast.makeText(context, "Failed to scan network", Toast.LENGTH_SHORT).show()
         },
         connectToPihole = {
             store.dispatch(Action.Connect(it))
