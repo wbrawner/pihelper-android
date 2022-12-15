@@ -62,7 +62,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.get()
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
 
@@ -77,7 +77,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.splash)
     implementation(libs.material)
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.security:security-crypto:1.0.0-rc01")
     implementation(libs.preference)

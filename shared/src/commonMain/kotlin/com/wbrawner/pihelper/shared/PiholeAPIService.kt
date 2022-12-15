@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -22,6 +23,7 @@ abstract class PiholeAPIService {
     abstract suspend fun enable(): StatusResponse
     abstract suspend fun disable(duration: Long? = null): StatusResponse
 
+    abstract suspend fun getDisabledDuration(): Long
     companion object
 }
 
@@ -84,8 +86,15 @@ class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
         url {
             host = baseUrl ?: error("baseUrl not set")
             encodedPath = BASE_PATH
-            parameter("disable", duration?.toString()?: "")
+            parameter("disable", duration?.toString() ?: "")
             parameter("auth", apiKey)
         }
     }.body()
+
+    override suspend fun getDisabledDuration(): Long = httpClient.get {
+        url {
+            host = baseUrl ?: error("baseUrl not set")
+            encodedPath = "/custom_disable_timer"
+        }
+    }.body<String>().toLong()
 }

@@ -13,7 +13,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -103,20 +102,22 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        splashScreen.setOnExitAnimationListener { splashScreenView ->
-            listOf(View.SCALE_X, View.SCALE_Y).forEach { axis ->
-                ObjectAnimator.ofFloat(
-                    splashScreenView,
-                    axis,
-                    1f,
-                    0.45f
-                ).apply {
-                    interpolator = AnticipateInterpolator()
-                    duration = 200L
-                    doOnEnd {
-                        splashScreenView.remove()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            splashScreen.setOnExitAnimationListener { splashScreenView ->
+                listOf(View.SCALE_X, View.SCALE_Y).forEach { axis ->
+                    ObjectAnimator.ofFloat(
+                        splashScreenView,
+                        axis,
+                        1f,
+                        0.45f
+                    ).apply {
+                        interpolator = AnticipateInterpolator()
+                        duration = 200L
+                        doOnEnd {
+                            splashScreenView.remove()
+                        }
+                        start()
                     }
-                    start()
                 }
             }
         }
@@ -143,7 +144,7 @@ fun LoadingSpinner(animate: Boolean = false) {
         modifier = Modifier.rotate(if (animate) rotation else 0f),
         painter = painterResource(id = R.drawable.ic_app_logo),
         contentDescription = "Loading",
-        colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
     )
 }
 
@@ -151,10 +152,4 @@ fun LoadingSpinner(animate: Boolean = false) {
 @Preview
 fun LoadingSpinner_Preview() {
     LoadingSpinner()
-}
-
-fun NavController.navigateIfNotAlreadyThere(route: String) {
-    if (currentDestination?.route != route) {
-        navigate(route)
-    }
 }

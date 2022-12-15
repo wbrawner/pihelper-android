@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.material3.TopAppBarDefaults.smallTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,13 +34,15 @@ fun InfoScreen(store: Store) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                backgroundColor = MaterialTheme.colors.surface,
-                elevation = 0.dp,
+                colors = smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
                 title = { Text("About Pi-helper") },
                 navigationIcon = {
                     IconButton(onClick = onBackClicked) {
@@ -73,7 +76,7 @@ fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
                 )
                 addStyle(
                     style = SpanStyle(
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     ),
                     start = name,
@@ -87,7 +90,7 @@ fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
                 )
                 addStyle(
                     style = SpanStyle(
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     ),
                     start = github,
@@ -98,7 +101,7 @@ fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
             ClickableText(
                 text = message,
                 style = TextStyle.Default.copy(
-                    color = MaterialTheme.colors.onSurface,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 ),
             ) {

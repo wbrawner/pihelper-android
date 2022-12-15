@@ -1,7 +1,12 @@
 package com.wbrawner.pihelper.shared
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 @Serializable()
 data class Summary(
@@ -42,18 +47,34 @@ data class Summary(
     val version: Int? = null
 ) : StatusProvider
 
-@Serializable
-enum class Status {
+@Serializable(with = Status.Serializer::class)
+sealed class Status(val name: String) {
     @SerialName("enabled")
-    ENABLED,
+    object Enabled : Status("enabled")
+
     @SerialName("disabled")
-    DISABLED,
-    @kotlinx.serialization.Transient
-    LOADING,
-    @kotlinx.serialization.Transient
-    UNKNOWN,
-    @kotlinx.serialization.Transient
-    ERROR
+    data class Disabled(val timeRemaining: String? = null) : Status(name) {
+        companion object {
+            const val name: String = "disabled"
+        }
+    }
+
+    class Serializer : KSerializer<Status> {
+        override val descriptor: SerialDescriptor
+            get() = String.serializer().descriptor
+
+        override fun deserialize(decoder: Decoder): Status {
+            return when (decoder.decodeString()) {
+                Enabled.name -> Enabled
+                Disabled.name -> Disabled()
+                else -> throw IllegalArgumentException("Invalid status")
+            }
+        }
+
+        override fun serialize(encoder: Encoder, value: Status) {
+            encoder.encodeString(value.name)
+        }
+    }
 }
 
 @Serializable()

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
 package com.wbrawner.pihelper
 
 import androidx.compose.animation.AnimatedContent
@@ -6,9 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.material3.TopAppBarDefaults.smallTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -17,17 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Status
 import com.wbrawner.pihelper.shared.Store
+import com.wbrawner.pihelper.ui.DayNightPreview
 import com.wbrawner.pihelper.ui.PihelperTheme
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
 @ExperimentalAnimationApi
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(store: Store) {
     val state = store.state.collectAsState()
@@ -35,34 +39,38 @@ fun MainScreen(store: Store) {
         topBar = {
             TopAppBar(
                 title = { Text("Pi-helper") },
-                backgroundColor = MaterialTheme.colors.background,
-                contentColor = MaterialTheme.colors.onBackground,
-                elevation = 0.dp,
+                colors = smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                ),
                 actions = {
                     IconButton(onClick = { store.dispatch(Action.About) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
-                            tint = MaterialTheme.colors.onBackground
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
             )
         }
-    ) {
+    ) { paddingValues ->
         val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val status = state.value.status
             LoadingSpinner(state.value.loading)
-            AnimatedContent(targetState = state.value.status, contentAlignment = Alignment.Center) {
-                state.value.status?.let {
-                    StatusLabel(it)
-                    if (it == Status.ENABLED) {
+            if (status != null) {
+                val enabled = status is Status.Enabled
+                StatusLabel(status)
+                AnimatedContent(targetState = enabled, contentAlignment = Alignment.Center) {
+                    if (enabled) {
                         DisableControls { duration -> store.dispatch(Action.Disable(duration)) }
                     } else {
                         EnableControls { store.dispatch(Action.Enable) }
@@ -76,21 +84,30 @@ fun MainScreen(store: Store) {
 @Composable
 fun StatusLabel(status: Status) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(color = MaterialTheme.colors.onSurface, text = "Status:")
+        Text(color = MaterialTheme.colorScheme.onSurface, text = "Status:")
         Spacer(modifier = Modifier.width(8.dp))
         val color = when (status) {
-            Status.ENABLED -> MaterialTheme.colors.secondaryVariant
-            Status.DISABLED -> MaterialTheme.colors.primaryVariant
+            is Status.Enabled -> MaterialTheme.colorScheme.secondary
+            is Status.Disabled -> MaterialTheme.colorScheme.primary
             else -> Color(0x00000000)
         }
         Text(
             color = color,
             fontWeight = FontWeight.Bold,
-            text = status.name.toLowerCase(Locale.US).capitalize(Locale.US)
+            text = status.name.capitalize(Locale.US)
         )
+        if (status is Status.Disabled && !status.timeRemaining.isNullOrBlank()) {
+            Text(
+                color = color,
+                fontWeight = FontWeight.Bold,
+                text = " (${status.timeRemaining})"
+            )
+        }
     }
 }
 
@@ -99,11 +116,10 @@ fun EnableControls(onClick: () -> Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
-            // The strange padding is to work around a bug with the animation
-            .padding(start = 16.dp, top = 48.dp, end = 16.dp),
+            .padding(16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.secondary,
-            contentColor = MaterialTheme.colors.onSecondary
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
         ),
         onClick = onClick
     ) {
@@ -117,8 +133,7 @@ fun DisableControls(disable: (duration: Long?) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            // The strange padding is to work around a bug with the animation
-            .padding(start = 16.dp, top = 48.dp, end = 16.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
     ) {
         PrimaryButton("Disable for 10 seconds") { disable(10) }
@@ -137,8 +152,8 @@ fun PrimaryButton(text: String, onClick: () -> Unit) {
     Button(
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.onPrimary
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ),
         onClick = onClick
     ) {
@@ -166,28 +181,26 @@ fun CustomTimeDialog(
     AlertDialog(
         shape = MaterialTheme.shapes.small,
         onDismissRequest = { setVisible(false) },
-        buttons = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton({ setVisible(false) }) {
-                    Text("Cancel")
-                }
-                TextButton(onClick = {
-                    // TODO: Move this math to the viewmodel or repository
-                    onTimeSelected(time.toLong() * (60.0.pow(duration.ordinal)).roundToLong())
-                    setVisible(false)
-                }) {
-                    Text("Disable")
-                }
+        dismissButton = {
+            TextButton({ setVisible(false) }) {
+                Text("Cancel")
             }
         },
-        title = { Text("Disable for custom time: ") },
+        confirmButton = {
+            TextButton(onClick = {
+                // TODO: Move this math to the viewmodel or repository
+                onTimeSelected(time.toLong() * (60.0.pow(duration.ordinal)).roundToLong())
+                setVisible(false)
+            }) {
+                Text("Disable")
+            }
+        },
+        title = { Text("Disable for custom time:") },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 OutlinedTextField(
                     value = time,
@@ -195,17 +208,18 @@ fun CustomTimeDialog(
                     placeholder = { Text("Time to disable") }
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     DurationToggle(
                         selected = duration == Duration.SECONDS,
                         onClick = { selectDuration(Duration.SECONDS) },
-                        text = "Seconds"
+                        text = "Secs"
                     )
                     DurationToggle(
                         selected = duration == Duration.MINUTES,
                         onClick = { selectDuration(Duration.MINUTES) },
-                        text = "Minutes"
+                        text = "Mins"
                     )
                     DurationToggle(
                         selected = duration == Duration.HOURS,
@@ -227,14 +241,14 @@ fun DurationToggle(selected: Boolean, onClick: () -> Unit, text: String) {
         Button(
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = if (selected)
-                    MaterialTheme.colors.primary
+                containerColor = if (selected)
+                    MaterialTheme.colorScheme.primary
                 else
-                    MaterialTheme.colors.background,
+                    MaterialTheme.colorScheme.background,
                 contentColor = if (selected)
-                    MaterialTheme.colors.onPrimary
+                    MaterialTheme.colorScheme.onPrimary
                 else
-                    MaterialTheme.colors.primary
+                    MaterialTheme.colorScheme.primary
             ),
             elevation = null
         ) {
@@ -244,77 +258,57 @@ fun DurationToggle(selected: Boolean, onClick: () -> Unit, text: String) {
 }
 
 @Composable
-@Preview
+@DayNightPreview
 fun CustomTimeDialog_Preview() {
-    CustomTimeDialog(true, {}) { }
+    PihelperTheme {
+        CustomTimeDialog(true, {}) { }
+    }
 }
 
 @Composable
-@Preview
+@DayNightPreview
 fun StatusLabelEnabled_Preview() {
-    PihelperTheme(false) {
-        StatusLabel(Status.ENABLED)
+    PihelperTheme {
+        StatusLabel(Status.Enabled)
     }
 }
 
 @Composable
-@Preview
-fun StatusLabelEnabled_DarkPreview() {
-    PihelperTheme(true) {
-        StatusLabel(Status.ENABLED)
-    }
-}
-
-@Composable
-@Preview
+@DayNightPreview
 fun StatusLabelDisabled_Preview() {
-    PihelperTheme(false) {
-        StatusLabel(Status.DISABLED)
+    PihelperTheme {
+        StatusLabel(Status.Disabled())
     }
 }
 
 @Composable
-@Preview
-fun StatusLabelDisabled_DarkPreview() {
-    PihelperTheme(true) {
-        StatusLabel(Status.DISABLED)
+@DayNightPreview
+fun StatusLabelDisabledWithTime_Preview() {
+    PihelperTheme {
+        StatusLabel(Status.Disabled("12:34:56"))
     }
 }
 
 @Composable
-@Preview
+@DayNightPreview
 fun PrimaryButton_Preview() {
-    PihelperTheme(false) {
+    PihelperTheme {
         PrimaryButton("Disable") {}
     }
 }
 
 @Composable
-@Preview
-fun PrimaryButton_DarkPreview() {
-    PihelperTheme(true) {
-        PrimaryButton("Disable") {}
-    }
-}
-
-@Composable
-@Preview
+@DayNightPreview
 fun EnableControls_Preview() {
-    PihelperTheme(false) {
+    PihelperTheme {
         EnableControls {}
     }
 }
 
 @Composable
-@Preview
-fun EnableControls_DarkPreview() {
-    PihelperTheme(true) {
-        EnableControls {}
-    }
-}
-
-@Composable
-@Preview
+@DayNightPreview
 fun DisableControls_Preview() {
-    DisableControls({})
+    PihelperTheme {
+        DisableControls {}
+    }
 }

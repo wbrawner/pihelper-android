@@ -1,47 +1,62 @@
 package com.wbrawner.pihelper.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 
-private val DarkColorPalette = darkColors(
+private val DarkColorPalette = darkColorScheme(
     background = Color.Black,
     surface = Color.Black,
     primary = Red500,
-    primaryVariant = Red900,
+//    primaryVariant = Red900,
     onPrimary = Color.White,
     secondary = Green500,
-    secondaryVariant = Green900,
+//    secondaryVariant = Green900,
     onSecondary = Color.White
 )
 
-private val LightColorPalette = lightColors(
+private val LightColorPalette = lightColorScheme(
     primary = Red500,
-    primaryVariant = Red900,
+//    primaryVariant = Red900,
     onPrimary = Color.White,
     secondary = Green500,
-    secondaryVariant = Green900,
+//    secondaryVariant = Green900,
     onSecondary = Color.White
 )
 
 @Composable
 fun PihelperTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
+    val context = LocalContext.current
+    val dynamic = false
+    val colors = if (dynamic) {
+        if (darkTheme) {
+            dynamicDarkColorScheme(context)
+        } else {
+            dynamicLightColorScheme(context)
+        }
     } else {
-        LightColorPalette
+        if (darkTheme) {
+            DarkColorPalette
+        } else {
+            LightColorPalette
+        }
     }
 
     MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
+        colorScheme = colors,
+//        typography = Typography,
+//        shapes = Shapes,
         content = {
-            Surface(color = MaterialTheme.colors.background, content = content)
+            Surface(color = MaterialTheme.colorScheme.background, content = content)
         }
     )
 }
+
+@Preview(uiMode = UI_MODE_NIGHT_NO)
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+annotation class DayNightPreview

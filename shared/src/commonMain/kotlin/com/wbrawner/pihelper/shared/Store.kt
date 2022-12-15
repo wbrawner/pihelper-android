@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.datetime.Clock
+import kotlin.math.floor
 
 enum class Route(val path: String) {
     CONNECT("connect"),
@@ -53,6 +55,10 @@ sealed interface Effect {
 
 const val KEY_HOST = "baseUrl"
 const val KEY_API_KEY = "apiKey"
+
+private const val ONE_HOUR = 3_600_000
+private const val ONE_MINUTE = 60_000
+private const val ONE_SECOND = 1_000
 
 class Store(
     private val apiService: PiholeAPIService,
@@ -204,50 +210,54 @@ class Store(
     }
 
     private fun enable() {
-        val loadingJob = launch {
-            delay(500)
-            _state.value = _state.value.copy(loading = true)
-        }
         launch {
+            _state.value = _state.value.copy(loading = true)
             try {
                 apiService.enable()
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
                 _effects.emit(Effect.Error(e.message ?: "Failed to enable Pi-hole"))
-            } finally {
-                loadingJob.cancel("")
             }
         }
     }
 
     private fun disable(duration: Long?) {
-        val loadingJob = launch {
-            delay(500)
-            _state.value = _state.value.copy(loading = true)
-        }
         launch {
+            _state.value = _state.value.copy(loading = true)
             try {
                 apiService.disable(duration)
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
                 _effects.emit(Effect.Error(e.message ?: "Failed to disable Pi-hole"))
-            } finally {
-                loadingJob.cancel("")
             }
         }
     }
 
     private suspend fun getStatus() {
-        val loadingJob = launch {
-            delay(500)
-            _state.value = _state.value.copy(loading = true)
+        val loadingJob = coroutineScope {
+            launch {
+                delay(1000)
+                _state.value = _state.value.copy(loading = true)
+            }
         }
         try {
             val summary = apiService.getSummary()
+            var status = summary.status
+            if (status is Status.Disabled) {
+                try {
+                    val until = apiService.getDisabledDuration()
+                    val now = Clock.System.now().toEpochMilliseconds()
+                    if (now > until) return
+                    status = status.copy(timeRemaining = (until - now).toDurationString())
+                } catch (ignored: Exception) {
+                    // This isn't critical to the operation of the app so errors are unimportant
+                    ignored.printStackTrace()
+                }
+            }
             loadingJob.cancel("")
-            // TODO: If status is disabled, check for how long
-            _state.value = _state.value.copy(status = summary.status, loading = false)
+            _state.value = _state.value.copy(status = status, loading = false)
         } catch (e: Exception) {
+            e.printStackTrace()
             _state.value = _state.value.copy(loading = false)
             _effects.emit(Effect.Error(e.message ?: "Failed to load status"))
         } finally {
@@ -268,3 +278,30 @@ class Store(
 }
 
 expect fun String.hash(): String
+
+fun Long.toDurationString(): String {
+    var timeRemaining = toDouble()
+    var formattedTimeRemaining = ""
+    if (timeRemaining > ONE_HOUR) {
+        formattedTimeRemaining += floor(timeRemaining / ONE_HOUR)
+            .toInt()
+            .toString() + ":"
+        timeRemaining %= ONE_HOUR
+    }
+    if (timeRemaining > ONE_MINUTE) {
+        val minutesLength = if (formattedTimeRemaining.isBlank()) 1 else 2
+        formattedTimeRemaining += floor(timeRemaining / ONE_MINUTE)
+            .toInt()
+            .toString()
+            .padStart(minutesLength, '0') + ':'
+        timeRemaining %= ONE_MINUTE
+    } else if (formattedTimeRemaining.isNotBlank()) {
+        formattedTimeRemaining += "00:"
+    }
+    val secondsLength = if (formattedTimeRemaining.isBlank()) 1 else 2
+    formattedTimeRemaining += floor(timeRemaining / ONE_SECOND)
+        .toInt()
+        .toString()
+        .padStart(secondsLength, '0')
+    return formattedTimeRemaining
+}

@@ -7,9 +7,10 @@ import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +74,7 @@ fun AddScreen(store: Store) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPiholeForm(
     scanNetwork: () -> Unit,
@@ -125,7 +127,7 @@ fun OrDivider() {
                 .weight(1f)
                 .padding(end = 8.dp)
                 .clip(RectangleShape)
-                .background(MaterialTheme.colors.onSurface),
+                .background(MaterialTheme.colorScheme.onSurface),
         )
         Text("OR")
         Box(
@@ -134,7 +136,7 @@ fun OrDivider() {
                 .weight(1f)
                 .padding(start = 8.dp)
                 .clip(RectangleShape)
-                .background(MaterialTheme.colors.onSurface),
+                .background(MaterialTheme.colorScheme.onSurface),
         )
     }
 }

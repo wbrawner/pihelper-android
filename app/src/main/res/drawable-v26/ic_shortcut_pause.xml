@@ -6,4 +6,5 @@
             android:inset="20%" />
     </foreground>
     <background android:drawable="@color/colorSurface" />
+    <monochrome android:drawable="@drawable/ic_pause" />
 </adaptive-icon>
