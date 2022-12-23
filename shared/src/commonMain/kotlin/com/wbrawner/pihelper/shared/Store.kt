@@ -92,7 +92,7 @@ class Store(
             monitorChanges()
         } else {
             launch {
-                connect("pi.hole")
+                connect("pi.hole", false)
             }
         }
     }
@@ -170,7 +170,7 @@ class Store(
         }
     }
 
-    private fun connect(host: String) {
+    private fun connect(host: String, emitError: Boolean = true) {
         _state.value = _state.value.copy(loading = true)
         launch {
             apiService.baseUrl = host
@@ -184,7 +184,9 @@ class Store(
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
-                _effects.emit(Effect.Error(e.message ?: "Failed to connect to $host"))
+                if (emitError) {
+                    _effects.emit(Effect.Error(e.message ?: "Failed to connect to $host"))
+                }
             }
         }
     }

@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -22,6 +21,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalAutofill
 import androidx.compose.ui.platform.LocalAutofillTree
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -29,17 +29,28 @@ import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.AuthenticationString
 import com.wbrawner.pihelper.shared.Store
-import kotlinx.coroutines.launch
+
+const val AUTH_SCREEN_TAG = "authScreen"
+const val SUCCESS_TEXT_TAG = "successText"
+const val PASSWORD_INPUT_TAG = "passwordInput"
+const val PASSWORD_BUTTON_TAG = "passwordButton"
+const val API_KEY_INPUT_TAG = "apiKeyInput"
+const val API_KEY_BUTTON_TAG = "apiKeyButton"
+
+@Composable
+fun AuthScreen(store: Store) {
+    AuthScreen(dispatch = store::dispatch)
+}
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AuthScreen(store: Store) {
+fun AuthScreen(dispatch: (Action) -> Unit) {
     val (password: String, setPassword: (String) -> Unit) = remember { mutableStateOf("") }
     val (apiKey: String, setApiKey: (String) -> Unit) = remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
+            .testTag(AUTH_SCREEN_TAG)
             .padding(16.dp)
             .fillMaxSize()
             .verticalScroll(scrollState),
@@ -51,6 +62,7 @@ fun AuthScreen(store: Store) {
             contentDescription = null
         )
         Text(
+            modifier = Modifier.testTag(SUCCESS_TEXT_TAG),
             text = "Pi-helper has successfully connected to your Pi-Hole!",
             textAlign = TextAlign.Center
         )
@@ -60,30 +72,38 @@ fun AuthScreen(store: Store) {
         )
         OutlinedTextField(
             modifier = Modifier
+                .testTag(PASSWORD_INPUT_TAG)
                 .fillMaxWidth()
                 .autofill(listOf(AutofillType.Password), onFill = setPassword),
             value = password,
             onValueChange = setPassword,
             label = { Text("Pi-hole Password") },
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            maxLines = 1
         )
-        PrimaryButton(text = "Authenticate with Password") {
-            store.dispatch(Action.Authenticate(AuthenticationString.Password(password)))
+        PrimaryButton(
+            modifier = Modifier.testTag(PASSWORD_BUTTON_TAG),
+            text = "Authenticate with Password"
+        ) {
+            dispatch(Action.Authenticate(AuthenticationString.Password(password)))
         }
         OrDivider()
         OutlinedTextField(
             modifier = Modifier
+                .testTag(API_KEY_INPUT_TAG)
                 .fillMaxWidth()
                 .autofill(listOf(AutofillType.Password), onFill = setApiKey),
             value = apiKey,
             onValueChange = setApiKey,
             label = { Text("Pi-hole API Key") },
             visualTransformation = PasswordVisualTransformation(),
+            maxLines = 1
         )
-        PrimaryButton(text = "Authenticate with API Key") {
-            coroutineScope.launch {
-                store.dispatch(Action.Authenticate(AuthenticationString.Token(apiKey)))
-            }
+        PrimaryButton(
+            modifier = Modifier.testTag(API_KEY_BUTTON_TAG),
+            text = "Authenticate with API Key"
+        ) {
+            dispatch(Action.Authenticate(AuthenticationString.Token(apiKey)))
         }
     }
 }

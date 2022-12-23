@@ -136,11 +136,11 @@ fun DisableControls(disable: (duration: Long?) -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
     ) {
-        PrimaryButton("Disable for 10 seconds") { disable(10) }
-        PrimaryButton("Disable for 30 seconds") { disable(30) }
-        PrimaryButton("Disable for 5 minutes") { disable(300) }
-        PrimaryButton("Disable for custom time") { setDialogVisible(true) }
-        PrimaryButton("Disable permanently") { disable(null) }
+        PrimaryButton(text = "Disable for 10 seconds") { disable(10) }
+        PrimaryButton(text = "Disable for 30 seconds") { disable(30) }
+        PrimaryButton(text = "Disable for 5 minutes") { disable(300) }
+        PrimaryButton(text = "Disable for custom time") { setDialogVisible(true) }
+        PrimaryButton(text = "Disable permanently") { disable(null) }
         CustomTimeDialog(dialogVisible, setDialogVisible) {
             disable(it)
         }
@@ -148,9 +148,13 @@ fun DisableControls(disable: (duration: Long?) -> Unit) {
 }
 
 @Composable
-fun PrimaryButton(text: String, onClick: () -> Unit) {
+fun PrimaryButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit
+) {
     Button(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -293,7 +297,7 @@ fun StatusLabelDisabledWithTime_Preview() {
 @DayNightPreview
 fun PrimaryButton_Preview() {
     PihelperTheme {
-        PrimaryButton("Disable") {}
+        PrimaryButton(text = "Disable") {}
     }
 }
 

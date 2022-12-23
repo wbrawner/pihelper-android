@@ -19,11 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Store
+import com.wbrawner.pihelper.ui.DayNightPreview
 import com.wbrawner.pihelper.ui.PihelperTheme
 import java.net.Inet4Address
 
@@ -32,16 +33,21 @@ val emulatorBuildModels = listOf(
     "sdk_gphone64_arm64"
 )
 
+const val ADD_SCREEN_TAG = "addScreen"
+const val CONNECT_BUTTON_TAG = "connectButton"
+const val HOST_TAG = "hostInput"
+const val SCAN_BUTTON_TAG = "scanButton"
+
 @Composable
 fun AddScreen(store: Store) {
     val context = LocalContext.current
-    AddPiholeForm(
-        scanNetwork = {
+    AddScreen(
+        scanNetwork = scan@{
             // TODO: This needs to go in the Store
             if (BuildConfig.DEBUG && emulatorBuildModels.contains(Build.MODEL)) {
                 // For emulators, just begin scanning the host machine directly
                 store.dispatch(Action.Scan("10.0.2.2"))
-                return@AddPiholeForm
+                return@scan
             }
             (context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)
                 ?.let { connectivityManager ->
@@ -76,7 +82,7 @@ fun AddScreen(store: Store) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPiholeForm(
+fun AddScreen(
     scanNetwork: () -> Unit,
     connectToPihole: (String) -> Unit,
     loading: Boolean = false
@@ -84,6 +90,7 @@ fun AddPiholeForm(
     val (host: String, setHost: (String) -> Unit) = remember { mutableStateOf("pi.hole") }
     Column(
         modifier = Modifier
+            .testTag(ADD_SCREEN_TAG)
             .padding(16.dp)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,7 +102,11 @@ fun AddPiholeForm(
                     "attempt to find it for you by scanning your network.",
             textAlign = TextAlign.Center
         )
-        PrimaryButton(text = "Scan Network", onClick = scanNetwork)
+        PrimaryButton(
+            modifier = Modifier.testTag(SCAN_BUTTON_TAG),
+            text = "Scan Network",
+            onClick = scanNetwork
+        )
         OrDivider()
         Text(
             text = "If you already know the IP address or host of your Pi-hole, you can also " +
@@ -103,12 +114,18 @@ fun AddPiholeForm(
             textAlign = TextAlign.Center
         )
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .testTag(HOST_TAG)
+                .fillMaxWidth(),
             value = host,
             onValueChange = setHost,
             label = { Text("Pi-hole Host") }
         )
-        PrimaryButton(text = "Connect to Pi-hole", onClick = { connectToPihole(host) })
+        PrimaryButton(
+            modifier = Modifier.testTag(CONNECT_BUTTON_TAG),
+            text = "Connect to Pi-hole",
+            onClick = { connectToPihole(host) }
+        )
     }
 }
 
@@ -142,33 +159,17 @@ fun OrDivider() {
 }
 
 @Composable
-@Preview
-fun AddPiholeForm_Preview() {
-    PihelperTheme(false) {
-        AddPiholeForm(scanNetwork = {}, {})
+@DayNightPreview
+fun AddScreen_Preview() {
+    PihelperTheme {
+        AddScreen({}, {})
     }
 }
 
 @Composable
-@Preview
-fun AddPiholeForm_DarkPreview() {
-    PihelperTheme(true) {
-        AddPiholeForm(scanNetwork = {}, {})
-    }
-}
-
-@Composable
-@Preview
+@DayNightPreview
 fun OrDivider_Preview() {
-    PihelperTheme(false) {
-        OrDivider()
-    }
-}
-
-@Composable
-@Preview
-fun OrDivider_DarkPreview() {
-    PihelperTheme(true) {
+    PihelperTheme {
         OrDivider()
     }
 }

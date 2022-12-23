@@ -2,6 +2,8 @@
 androidx-core = "1.9.0"
 androidx-appcompat = "1.5.1"
 androidx-splash = "1.0.0"
+androidx-test-runner = "1.5.1"
+androidx-test-orchestrator = "1.4.2"
 compose = "1.2.1"
 compose-compiler = "1.3.2"
 compose-material3 = "1.0.1"
@@ -16,7 +18,7 @@ material = "1.3.0"
 maxSdk = "33"
 minSdk = "23"
 navigation = "2.4.1"
-okhttp = "4.2.2"
+okhttp = "4.10.0"
 settings = "0.8.1"
 versionCode = "1"
 versionName = "1.0"
@@ -26,17 +28,21 @@ android-gradle = { module = "com.android.tools.build:gradle", version = "7.3.1" 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splash" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test-orchestrator" }
 compose-activity = { module = "androidx.activity:activity-compose", version = "1.6.0" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 compose-material3-window = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
-compose-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
+compose-test-junit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
+compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
 compose-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 dagger-hilt = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-android" }
 espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 hilt-android-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
-hilt-android-kapt = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-android" }
+hilt-android-kapt = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-android" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.0.0" }
 junit = { module = "junit:junit", version = "4.12" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -55,16 +61,15 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "settings" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version = "navigation" }
 navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
 preference = { module = "androidx.preference:preference-ktx", version = "1.1.1" }
-test-ext = { module = "androidx.test.ext:junit", version = "1.1.2" }
+test-ext = { module = "androidx.test.ext:junit", version = "1.1.4" }
 
 [bundles]
 compose = ["compose-ui", "compose-material", "compose-material3", "compose-material3-window", "compose-tooling", "compose-activity", "navigation-compose"]
 coroutines = ["kotlinx-coroutines-core", "kotlinx-coroutines-android"]
 plugins = ["android-gradle", "kotlin-gradle", "dagger-hilt", "kotlin-serialization"]
-
-

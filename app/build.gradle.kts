@@ -30,8 +30,12 @@ android {
         targetSdk = libs.versions.maxSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.wbrawner.pihelper.HiltTestRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
         signingConfig = signingConfigs["debug"]
+    }
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
     signingConfigs {
         create("release") {
@@ -81,7 +85,14 @@ dependencies {
     implementation("androidx.security:security-crypto:1.0.0-rc01")
     implementation(libs.preference)
     testImplementation(libs.junit)
+    androidTestImplementation(libs.mockwebserver)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestUtil(libs.androidx.test.orchestrator)
     androidTestImplementation(libs.test.ext)
     androidTestImplementation(libs.espresso)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.android.kapt)
+    androidTestImplementation(libs.compose.test.junit)
+    debugImplementation(libs.compose.test.manifest)
 }
 

@@ -12,22 +12,20 @@ import kotlinx.serialization.json.Json
 
 const val BASE_PATH = "/admin/api.php"
 
-abstract class PiholeAPIService {
-    abstract var baseUrl: String?
-    abstract var apiKey: String?
+interface PiholeAPIService {
+    var baseUrl: String?
+    var apiKey: String?
+    suspend fun getSummary(): Summary
+    suspend fun getVersion(): VersionResponse
+    suspend fun getTopItems(): TopItemsResponse
+    suspend fun enable(): StatusResponse
+    suspend fun disable(duration: Long? = null): StatusResponse
+    suspend fun getDisabledDuration(): Long
 
-    abstract suspend fun getSummary(): Summary
-
-    abstract suspend fun getVersion(): VersionResponse
-    abstract suspend fun getTopItems(): TopItemsResponse
-    abstract suspend fun enable(): StatusResponse
-    abstract suspend fun disable(duration: Long? = null): StatusResponse
-
-    abstract suspend fun getDisabledDuration(): Long
     companion object
 }
 
-fun <T: HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
+fun <T : HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
     install(ContentNegotiation) {
         json(Json {
             ignoreUnknownKeys = true
@@ -41,8 +39,16 @@ fun <T: HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
     }
 }
 
-class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
+class KtorPiholeAPIService(private val httpClient: HttpClient) : PiholeAPIService {
+    private var port = 80
     override var baseUrl: String? = null
+        set(value) {
+            if (value?.contains(":") == true) {
+                val parts = value.split(":")
+                field = parts.first()
+                port = parts.last().toInt()
+            }
+        }
     override var apiKey: String? = null
         get() {
             println("apiKey: $field")
@@ -52,6 +58,7 @@ class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
     override suspend fun getSummary(): Summary = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
+            port = this@KtorPiholeAPIService.port
             encodedPath = BASE_PATH
         }
     }.body()
@@ -59,14 +66,17 @@ class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
     override suspend fun getVersion(): VersionResponse = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
+            port = this@KtorPiholeAPIService.port
             encodedPath = BASE_PATH
             parameter("version", "")
         }
+        println("Request sent to $host:$port")
     }.body()
 
     override suspend fun getTopItems(): TopItemsResponse = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
+            port = this@KtorPiholeAPIService.port
             encodedPath = BASE_PATH
             parameter("topItems", "25")
             parameter("auth", apiKey)
@@ -76,6 +86,7 @@ class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
     override suspend fun enable(): StatusResponse = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
+            port = this@KtorPiholeAPIService.port
             encodedPath = BASE_PATH
             parameter("enable", "")
             parameter("auth", apiKey)
@@ -85,6 +96,7 @@ class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
     override suspend fun disable(duration: Long?): StatusResponse = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
+            port = this@KtorPiholeAPIService.port
             encodedPath = BASE_PATH
             parameter("disable", duration?.toString() ?: "")
             parameter("auth", apiKey)
@@ -94,6 +106,7 @@ class KtorPiholeAPIService(val httpClient: HttpClient) : PiholeAPIService() {
     override suspend fun getDisabledDuration(): Long = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
+            port = this@KtorPiholeAPIService.port
             encodedPath = "/custom_disable_timer"
         }
     }.body<String>().toLong()
