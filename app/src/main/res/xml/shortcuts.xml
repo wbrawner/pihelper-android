@@ -4,11 +4,11 @@
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_pause">
         <intent
-            android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
+            android:action="com.wbrawner.pihelper.ShortcutActions.DISABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
             android:targetPackage="com.wbrawner.pihelper">
             <extra
-                android:name="com.wbrawner.pihelper.MainFragment.EXTRA_DURATION"
+                android:name="com.wbrawner.pihelper.MainActivityKt.DURATION"
                 android:value="300" />
         </intent>
     </shortcut>
@@ -17,11 +17,11 @@
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_pause">
         <intent
-            android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
+            android:action="com.wbrawner.pihelper.ShortcutActions.DISABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
             android:targetPackage="com.wbrawner.pihelper">
             <extra
-                android:name="com.wbrawner.pihelper.MainFragment.EXTRA_DURATION"
+                android:name="com.wbrawner.pihelper.MainActivityKt.DURATION"
                 android:value="30" />
         </intent>
     </shortcut>
@@ -30,11 +30,11 @@
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_pause">
         <intent
-            android:action="com.wbrawner.pihelper.MainFragment.ACTION_DISABLE"
+            android:action="com.wbrawner.pihelper.ShortcutActions.DISABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
             android:targetPackage="com.wbrawner.pihelper">
             <extra
-                android:name="com.wbrawner.pihelper.MainFragment.EXTRA_DURATION"
+                android:name="com.wbrawner.pihelper.MainActivityKt.DURATION"
                 android:value="10" />
         </intent>
     </shortcut>
@@ -43,7 +43,7 @@
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_enable">
         <intent
-            android:action="com.wbrawner.pihelper.MainFragment.ACTION_ENABLE"
+            android:action="com.wbrawner.pihelper.ShortcutActions.ENABLE"
             android:targetClass="com.wbrawner.pihelper.MainActivity"
             android:targetPackage="com.wbrawner.pihelper" />
     </shortcut>

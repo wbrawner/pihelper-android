@@ -13,10 +13,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
@@ -60,6 +57,17 @@ class MainActivity : AppCompatActivity() {
                     @Suppress("DEPRECATION")
                     window.decorView.systemUiVisibility =
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                }
+            }
+            val launchIntent = remember { intent }
+            LaunchedEffect(launchIntent) {
+                ShortcutActions.fromIntentAction(launchIntent.action)?.let { action ->
+                    if (action == ShortcutActions.DISABLE) {
+                        val duration = launchIntent.getIntExtra(DURATION, 0)
+                        store.dispatch(Action.Disable(duration.toLong()))
+                    } else {
+                        store.dispatch(Action.Enable)
+                    }
                 }
             }
             val state by store.state.collectAsState()
@@ -147,3 +155,18 @@ fun LoadingSpinner(animate: Boolean = false) {
 fun LoadingSpinner_Preview() {
     LoadingSpinner()
 }
+
+enum class ShortcutActions(val fullName: String) {
+    ENABLE("com.wbrawner.pihelper.ShortcutActions.ENABLE"),
+    DISABLE("com.wbrawner.pihelper.ShortcutActions.DISABLE");
+
+    companion object {
+        fun fromIntentAction(action: String?): ShortcutActions? = when (action) {
+            ENABLE.fullName -> ENABLE
+            DISABLE.fullName -> DISABLE
+            else -> null
+        }
+    }
+}
+
+const val DURATION: String = "com.wbrawner.pihelper.MainActivityKt.DURATION"
