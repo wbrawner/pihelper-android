@@ -12,16 +12,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.smallTopAppBarColors
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Action
+import com.wbrawner.pihelper.shared.Effect
 import com.wbrawner.pihelper.shared.Status
 import com.wbrawner.pihelper.shared.Store
 import com.wbrawner.pihelper.ui.DayNightPreview
@@ -29,13 +29,43 @@ import com.wbrawner.pihelper.ui.PihelperTheme
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToLong
+import com.wbrawner.pihelper.shared.State as PihelperState
+
+const val MAIN_SCREEN_TAG = "mainScreen"
+const val STATUS_TEXT_TAG = "statusText"
+const val ENABLE_BUTTON_TAG = "enableButton"
+const val DISABLE_TEN_BUTTON_TAG = "disableTenButton"
+const val DISABLE_THIRTY_BUTTON_TAG = "disableThirtyButton"
+const val DISABLE_FIVE_BUTTON_TAG = "disableFiveButton"
+const val DISABLE_CUSTOM_BUTTON_TAG = "disableCustomButton"
+const val DISABLE_CUSTOM_INPUT_TAG = "disableCustomInput"
+const val DISABLE_CUSTOM_INPUT_SECONDS_TAG = "disableCustomInputSeconds"
+const val DISABLE_CUSTOM_INPUT_MINUTES_TAG = "disableCustomInputMinutes"
+const val DISABLE_CUSTOM_INPUT_HOURS_TAG = "disableCustomInputHours"
+const val DISABLE_CUSTOM_CANCEL_BUTTON_TAG = "disableCustomCancelButton"
+const val DISABLE_CUSTOM_SUBMIT_BUTTON_TAG = "disableCustomSubmitButton"
+const val DISABLE_PERMANENT_BUTTON_TAG = "disablePermanentButton"
+
+@ExperimentalAnimationApi
+@Composable
+fun MainScreen(store: Store) {
+    val state by store.state.collectAsState()
+    val effect by store.effects.collectAsState(initial = Effect.Empty)
+    println(effect)
+    MainScreen(state = state, error = effect as? Effect.Error, dispatch = store::dispatch)
+}
 
 @ExperimentalAnimationApi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(store: Store) {
-    val state = store.state.collectAsState()
+fun MainScreen(
+    state: PihelperState,
+    error: Effect.Error? = null,
+    dispatch: (Action) -> Unit
+) {
+
     Scaffold(
+        modifier = Modifier.testTag(MAIN_SCREEN_TAG),
         topBar = {
             TopAppBar(
                 title = { Text("Pi-helper") },
@@ -44,7 +74,7 @@ fun MainScreen(store: Store) {
                     titleContentColor = MaterialTheme.colorScheme.onBackground
                 ),
                 actions = {
-                    IconButton(onClick = { store.dispatch(Action.About) }) {
+                    IconButton(onClick = { dispatch(Action.About) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
@@ -64,18 +94,25 @@ fun MainScreen(store: Store) {
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val status = state.value.status
-            LoadingSpinner(state.value.loading)
+            val status = state.status
+            LoadingSpinner(state.loading)
             if (status != null) {
                 val enabled = status is Status.Enabled
                 StatusLabel(status)
                 AnimatedContent(targetState = enabled, contentAlignment = Alignment.Center) {
                     if (enabled) {
-                        DisableControls { duration -> store.dispatch(Action.Disable(duration)) }
+                        DisableControls { duration -> dispatch(Action.Disable(duration)) }
                     } else {
-                        EnableControls { store.dispatch(Action.Enable) }
+                        EnableControls { dispatch(Action.Enable) }
                     }
                 }
+            }
+            error?.let {
+                Text(
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    text = "${it.message}"
+                )
             }
         }
     }
@@ -97,6 +134,7 @@ fun StatusLabel(status: Status) {
             else -> Color(0x00000000)
         }
         Text(
+            modifier = Modifier.testTag(STATUS_TEXT_TAG),
             color = color,
             fontWeight = FontWeight.Bold,
             text = status.name.capitalize(Locale.US)
@@ -115,6 +153,7 @@ fun StatusLabel(status: Status) {
 fun EnableControls(onClick: () -> Unit) {
     Button(
         modifier = Modifier
+            .testTag(ENABLE_BUTTON_TAG)
             .fillMaxWidth()
             .padding(16.dp),
         colors = ButtonDefaults.buttonColors(
@@ -136,11 +175,26 @@ fun DisableControls(disable: (duration: Long?) -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
     ) {
-        PrimaryButton(text = "Disable for 10 seconds") { disable(10) }
-        PrimaryButton(text = "Disable for 30 seconds") { disable(30) }
-        PrimaryButton(text = "Disable for 5 minutes") { disable(300) }
-        PrimaryButton(text = "Disable for custom time") { setDialogVisible(true) }
-        PrimaryButton(text = "Disable permanently") { disable(null) }
+        PrimaryButton(
+            modifier = Modifier.testTag(DISABLE_TEN_BUTTON_TAG),
+            text = "Disable for 10 seconds"
+        ) { disable(10) }
+        PrimaryButton(
+            modifier = Modifier.testTag(DISABLE_THIRTY_BUTTON_TAG),
+            text = "Disable for 30 seconds"
+        ) { disable(30) }
+        PrimaryButton(
+            modifier = Modifier.testTag(DISABLE_FIVE_BUTTON_TAG),
+            text = "Disable for 5 minutes"
+        ) { disable(300) }
+        PrimaryButton(
+            modifier = Modifier.testTag(DISABLE_CUSTOM_BUTTON_TAG),
+            text = "Disable for custom time"
+        ) { setDialogVisible(true) }
+        PrimaryButton(
+            modifier = Modifier.testTag(DISABLE_PERMANENT_BUTTON_TAG),
+            text = "Disable permanently"
+        ) { disable(null) }
         CustomTimeDialog(dialogVisible, setDialogVisible) {
             disable(it)
         }
@@ -186,16 +240,22 @@ fun CustomTimeDialog(
         shape = MaterialTheme.shapes.small,
         onDismissRequest = { setVisible(false) },
         dismissButton = {
-            TextButton({ setVisible(false) }) {
+            TextButton(
+                modifier = Modifier.testTag(DISABLE_CUSTOM_CANCEL_BUTTON_TAG),
+                onClick = { setVisible(false) }
+            ) {
                 Text("Cancel")
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                // TODO: Move this math to the viewmodel or repository
-                onTimeSelected(time.toLong() * (60.0.pow(duration.ordinal)).roundToLong())
-                setVisible(false)
-            }) {
+            TextButton(
+                modifier = Modifier.testTag(DISABLE_CUSTOM_SUBMIT_BUTTON_TAG),
+                onClick = {
+                    // TODO: Move this math to the store
+                    onTimeSelected(time.toLong() * (60.0.pow(duration.ordinal)).roundToLong())
+                    setVisible(false)
+                }
+            ) {
                 Text("Disable")
             }
         },
@@ -207,6 +267,7 @@ fun CustomTimeDialog(
                 verticalArrangement = Arrangement.Center
             ) {
                 OutlinedTextField(
+                    modifier = Modifier.testTag(DISABLE_CUSTOM_INPUT_TAG),
                     value = time,
                     onValueChange = { setTime(it) },
                     placeholder = { Text("Time to disable") }
@@ -216,16 +277,19 @@ fun CustomTimeDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     DurationToggle(
+                        modifier = Modifier.testTag(DISABLE_CUSTOM_INPUT_SECONDS_TAG),
                         selected = duration == Duration.SECONDS,
                         onClick = { selectDuration(Duration.SECONDS) },
                         text = "Secs"
                     )
                     DurationToggle(
+                        modifier = Modifier.testTag(DISABLE_CUSTOM_INPUT_MINUTES_TAG),
                         selected = duration == Duration.MINUTES,
                         onClick = { selectDuration(Duration.MINUTES) },
                         text = "Mins"
                     )
                     DurationToggle(
+                        modifier = Modifier.testTag(DISABLE_CUSTOM_INPUT_HOURS_TAG),
                         selected = duration == Duration.HOURS,
                         onClick = { selectDuration(Duration.HOURS) },
                         text = "Hours"
@@ -237,9 +301,14 @@ fun CustomTimeDialog(
 }
 
 @Composable
-fun DurationToggle(selected: Boolean, onClick: () -> Unit, text: String) {
+fun DurationToggle(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    onClick: () -> Unit,
+    text: String
+) {
     Row(
-        modifier = Modifier.selectable(selected = selected, onClick = onClick),
+        modifier = modifier.selectable(selected = selected, onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(

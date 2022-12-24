@@ -3,6 +3,7 @@ package com.wbrawner.pihelper.shared
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
+import io.ktor.serialization.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -50,7 +51,7 @@ sealed interface Action {
 sealed interface Effect {
     object Exit : Effect
     data class Error(val message: String) : Effect
-    object Empty
+    object Empty : Effect
 }
 
 const val KEY_HOST = "baseUrl"
@@ -78,8 +79,8 @@ class Store(
                 println(it)
             }
         }
-        val host: String? = settings[KEY_HOST]
-        val apiKey: String? = settings[KEY_API_KEY]
+        val host: String? = initialState.host ?: settings[KEY_HOST]
+        val apiKey: String? = initialState.apiKey ?: settings[KEY_API_KEY]
         if (!host.isNullOrBlank() && !apiKey.isNullOrBlank()) {
             apiService.baseUrl = host
             apiService.apiKey = apiKey
@@ -175,7 +176,14 @@ class Store(
         launch {
             apiService.baseUrl = host
             try {
-                apiService.getVersion()
+                val isPihole = apiService.testConnection()
+                if (!isPihole) {
+                    _state.value = _state.value.copy(loading = false)
+                    if (emitError) {
+                        _effects.emit(Effect.Error("Host does not appear to be a valid Pi-hole"))
+                    }
+                    return@launch
+                }
                 settings[KEY_HOST] = host
                 _state.value = _state.value.copy(
                     host = host,
@@ -206,7 +214,12 @@ class Store(
                 monitorChanges()
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
-                _effects.emit(Effect.Error(e.message ?: "Unable to authenticate with API key"))
+                val message = if (e is JsonConvertException) {
+                    "Invalid credentials"
+                } else {
+                    e.message ?: "Unable to authenticate with API key"
+                }
+                _effects.emit(Effect.Error(message))
             }
         }
     }
@@ -216,6 +229,7 @@ class Store(
             _state.value = _state.value.copy(loading = true)
             try {
                 apiService.enable()
+                getStatus()
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
                 _effects.emit(Effect.Error(e.message ?: "Failed to enable Pi-hole"))
@@ -228,6 +242,7 @@ class Store(
             _state.value = _state.value.copy(loading = true)
             try {
                 apiService.disable(duration)
+                getStatus()
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false)
                 _effects.emit(Effect.Error(e.message ?: "Failed to disable Pi-hole"))
@@ -235,35 +250,41 @@ class Store(
         }
     }
 
-    private suspend fun getStatus() {
-        val loadingJob = coroutineScope {
-            launch {
-                delay(1000)
-                _state.value = _state.value.copy(loading = true)
-            }
+    private fun getStatus() {
+        val loadingJob = launch {
+            delay(1000)
+            _state.value = _state.value.copy(loading = true)
         }
-        try {
-            val summary = apiService.getSummary()
-            var status = summary.status
-            if (status is Status.Disabled) {
-                try {
-                    val until = apiService.getDisabledDuration()
-                    val now = Clock.System.now().toEpochMilliseconds()
-                    if (now > until) return
-                    status = status.copy(timeRemaining = (until - now).toDurationString())
-                } catch (ignored: Exception) {
-                    // This isn't critical to the operation of the app so errors are unimportant
-                    ignored.printStackTrace()
+        launch {
+            try {
+                val summary = apiService.getSummary()
+                var status = summary.status
+                if (status is Status.Disabled) {
+                    try {
+                        val until = apiService.getDisabledDuration()
+                        val now = Clock.System.now().toEpochMilliseconds()
+                        if (now > until) return@launch
+                        status = status.copy(timeRemaining = (until - now).toDurationString())
+                    } catch (e: Exception) {
+                        // This isn't critical to the operation of the app so errors are unimportant
+                        if (e is NumberFormatException) {
+                            // Pi-hole will redirect to /admin instead of just sending a 404 if
+                            // the file isn't present, so it's probably disabled permanently
+                        } else {
+                            _effects.emit(Effect.Error("Failed to determine disabled duration"))
+                            e.printStackTrace()
+                        }
+                    }
                 }
+                _effects.emit(Effect.Empty)
+                _state.value = _state.value.copy(status = status, loading = false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _state.value = _state.value.copy(loading = false)
+                _effects.emit(Effect.Error(e.message ?: "Failed to load status"))
+            } finally {
+                loadingJob.cancel("")
             }
-            loadingJob.cancel("")
-            _state.value = _state.value.copy(status = status, loading = false)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            _state.value = _state.value.copy(loading = false)
-            _effects.emit(Effect.Error(e.message ?: "Failed to load status"))
-        } finally {
-            loadingJob.cancel("")
         }
     }
 

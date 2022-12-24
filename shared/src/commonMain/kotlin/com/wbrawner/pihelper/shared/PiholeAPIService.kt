@@ -15,6 +15,7 @@ const val BASE_PATH = "/admin/api.php"
 interface PiholeAPIService {
     var baseUrl: String?
     var apiKey: String?
+    suspend fun testConnection(): Boolean
     suspend fun getSummary(): Summary
     suspend fun getVersion(): VersionResponse
     suspend fun getTopItems(): TopItemsResponse
@@ -47,21 +48,32 @@ class KtorPiholeAPIService(private val httpClient: HttpClient) : PiholeAPIServic
                 val parts = value.split(":")
                 field = parts.first()
                 port = parts.last().toInt()
+            } else {
+                field = value
             }
         }
     override var apiKey: String? = null
-        get() {
-            println("apiKey: $field")
-            return field
-        }
 
     override suspend fun getSummary(): Summary = httpClient.get {
         url {
             host = baseUrl ?: error("baseUrl not set")
             port = this@KtorPiholeAPIService.port
             encodedPath = BASE_PATH
+            parameter("auth", apiKey)
+            parameter("summary", "")
         }
     }.body()
+
+    override suspend fun testConnection(): Boolean {
+        val response = httpClient.head {
+            url {
+                host = baseUrl ?: error("baseUrl not set")
+                port = this@KtorPiholeAPIService.port
+                encodedPath = BASE_PATH
+            }
+        }
+        return response.headers.contains("X-Pi-Hole")
+    }
 
     override suspend fun getVersion(): VersionResponse = httpClient.get {
         url {
@@ -70,7 +82,6 @@ class KtorPiholeAPIService(private val httpClient: HttpClient) : PiholeAPIServic
             encodedPath = BASE_PATH
             parameter("version", "")
         }
-        println("Request sent to $host:$port")
     }.body()
 
     override suspend fun getTopItems(): TopItemsResponse = httpClient.get {

@@ -1,4 +1,4 @@
-package com.wbrawner.pihelper
+package com.wbrawner.pihelper.util
 
 import android.app.Application
 import android.content.Context

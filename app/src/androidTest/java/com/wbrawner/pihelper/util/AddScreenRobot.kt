@@ -1,9 +1,12 @@
-package com.wbrawner.pihelper
+package com.wbrawner.pihelper.util
 
 import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.platform.app.InstrumentationRegistry
+import com.wbrawner.pihelper.ADD_SCREEN_TAG
+import com.wbrawner.pihelper.CONNECT_BUTTON_TAG
+import com.wbrawner.pihelper.HOST_TAG
 
 fun onAddScreen(testRule: ComposeTestRule, actions: AddScreenRobot.() -> Unit) =
     AddScreenRobot(testRule).apply { actions() }
@@ -31,4 +34,11 @@ class AddScreenRobot(private val testRule: ComposeTestRule) {
 
     fun clickConnect() = testRule.onNode(hasTestTag(CONNECT_BUTTON_TAG)).performClick()
 
+    fun verifyErrorMessageIsDisplayed(message: String) {
+        testRule.waitUntil(2_000) {
+            testRule
+                .onAllNodesWithText(message, substring = true)
+                .fetchSemanticsNodes().size == 1
+        }
+    }
 }

@@ -11,18 +11,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Action
+import com.wbrawner.pihelper.shared.Effect
 import com.wbrawner.pihelper.shared.Store
 import com.wbrawner.pihelper.ui.DayNightPreview
 import com.wbrawner.pihelper.ui.PihelperTheme
@@ -40,6 +41,7 @@ const val SCAN_BUTTON_TAG = "scanButton"
 
 @Composable
 fun AddScreen(store: Store) {
+    val effect by store.effects.collectAsState(initial = Effect.Empty)
     val context = LocalContext.current
     AddScreen(
         scanNetwork = scan@{
@@ -76,18 +78,21 @@ fun AddScreen(store: Store) {
         connectToPihole = {
             store.dispatch(Action.Connect(it))
         },
-        store.state.value.loading
+        store.state.value.loading,
+        error = effect as? Effect.Error
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AddScreen(
     scanNetwork: () -> Unit,
     connectToPihole: (String) -> Unit,
-    loading: Boolean = false
+    loading: Boolean = false,
+    error: Effect.Error? = null
 ) {
     val (host: String, setHost: (String) -> Unit) = remember { mutableStateOf("pi.hole") }
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
             .testTag(ADD_SCREEN_TAG)
@@ -124,8 +129,18 @@ fun AddScreen(
         PrimaryButton(
             modifier = Modifier.testTag(CONNECT_BUTTON_TAG),
             text = "Connect to Pi-hole",
-            onClick = { connectToPihole(host) }
+            onClick = {
+                keyboardController?.hide()
+                connectToPihole(host)
+            }
         )
+        error?.let {
+            Text(
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                text = "Connection failed: ${it.message}"
+            )
+        }
     }
 }
 
@@ -162,7 +177,7 @@ fun OrDivider() {
 @DayNightPreview
 fun AddScreen_Preview() {
     PihelperTheme {
-        AddScreen({}, {})
+        AddScreen({}, {}, error = Effect.Error("Something bad happened"))
     }
 }
 

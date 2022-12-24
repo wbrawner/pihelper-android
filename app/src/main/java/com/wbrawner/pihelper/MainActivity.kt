@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsetsController
 import android.view.animation.AnticipateInterpolator
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -21,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
@@ -71,15 +69,12 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(state.route.name)
             }
             val effect by store.effects.collectAsState(initial = Effect.Empty)
-            val context = LocalContext.current
             LaunchedEffect(effect) {
                 when (effect) {
-                    is Effect.Error -> Toast.makeText(
-                        context,
-                        (effect as Effect.Error).message,
-                        Toast.LENGTH_SHORT
-                    ).show()
                     is Effect.Exit -> finish()
+                    else -> {
+                        // no-op
+                    }
                 }
             }
             PihelperTheme {

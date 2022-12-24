@@ -1,12 +1,10 @@
-package com.wbrawner.pihelper
+package com.wbrawner.pihelper.util
 
 import android.content.Context
-import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
 import androidx.test.platform.app.InstrumentationRegistry
+import com.wbrawner.pihelper.*
 
 class AuthScreenRobot(private val testRule: ComposeTestRule) {
     val context: Context = InstrumentationRegistry.getInstrumentation().context
@@ -26,11 +24,21 @@ class AuthScreenRobot(private val testRule: ComposeTestRule) {
         testRule.onNode(hasTestTag(PASSWORD_INPUT_TAG)).performTextInput(password)
 
     fun clickAuthenticateWithPassword() = testRule.onNode(hasTestTag(PASSWORD_BUTTON_TAG))
+        .performScrollTo()
         .performClick()
 
     fun inputAPIKey(key: String) =
         testRule.onNode(hasTestTag(API_KEY_INPUT_TAG)).performTextInput(key)
 
     fun clickAuthenticateWithAPIKey() = testRule.onNode(hasTestTag(API_KEY_BUTTON_TAG))
+        .performScrollTo()
         .performClick()
+
+    fun verifyErrorMessageIsDisplayed(message: String) {
+        testRule.waitUntil(2_000) {
+            testRule
+                .onAllNodesWithText(message, substring = true)
+                .fetchSemanticsNodes().size == 1
+        }
+    }
 }

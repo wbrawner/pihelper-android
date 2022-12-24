@@ -30,7 +30,7 @@ android {
         targetSdk = libs.versions.maxSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
-        testInstrumentationRunner = "com.wbrawner.pihelper.HiltTestRunner"
+        testInstrumentationRunner = "com.wbrawner.pihelper.util.HiltTestRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
         signingConfig = signingConfigs["debug"]
     }

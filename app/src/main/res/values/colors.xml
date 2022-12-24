@@ -9,7 +9,7 @@
     <color name="colorGreenDark">#1B5E20</color>
     <color name="colorShortcutBackground">#FFFFFFFF</color>
     <color name="colorOnSurface">#000000</color>
-    <color name="colorWhite">#ffffff</color>
+    <color name="colorWhite">#FFFBFE</color>
     <color name="colorSurface">@color/colorWhite</color>
     <color name="colorTransparent">#00000000</color>
 </resources>
