@@ -7,4 +7,6 @@
     <string name="action_disable_30_seconds_short">Disable for 30 seconds</string>
     <string name="action_disable_5_minutes">Disable for 5 minutes</string>
     <string name="action_disable_5_minutes_short">Disable for 5 minutes</string>
+    <string name="plausible_domain">pihelper.android.wbrawner.com</string>
+    <string name="plausible_host">https://plausible.wbrawner.com</string>
 </resources>

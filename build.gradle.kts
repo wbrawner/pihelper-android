@@ -1,3 +1,5 @@
+import java.net.URI
+
 buildscript {
     repositories {
         gradlePluginPortal()
@@ -13,5 +15,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        }
     }
 }

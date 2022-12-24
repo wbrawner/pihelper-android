@@ -19,6 +19,7 @@ maxSdk = "33"
 minSdk = "23"
 navigation = "2.4.1"
 okhttp = "4.10.0"
+plausible = "0.1.0-SNAPSHOT"
 settings = "0.8.1"
 versionCode = "1"
 versionName = "1.0"
@@ -66,6 +67,7 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings-no-arg
 navigation-compose = { module = "androidx.navigation:navigation-compose", version = "navigation" }
 navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
+plausible = { module = "com.wbrawner.plausible:plausible-android", version.ref = "plausible" }
 preference = { module = "androidx.preference:preference-ktx", version = "1.1.1" }
 test-ext = { module = "androidx.test.ext:junit", version = "1.1.4" }
 

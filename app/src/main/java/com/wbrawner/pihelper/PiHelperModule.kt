@@ -1,8 +1,6 @@
 package com.wbrawner.pihelper
 
-import com.wbrawner.pihelper.shared.PiholeAPIService
-import com.wbrawner.pihelper.shared.Store
-import com.wbrawner.pihelper.shared.create
+import com.wbrawner.pihelper.shared.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +16,12 @@ object PiHelperModule {
 
     @Provides
     @Singleton
+    fun providesAnalyticsHelper(): AnalyticsHelper = PlausibleAnalyticsHelper
+
+    @Provides
+    @Singleton
     fun providesStore(
         apiService: PiholeAPIService,
-    ): Store = Store(apiService)
+        analyticsHelper: AnalyticsHelper
+    ): Store = Store(apiService, analyticsHelper)
 }

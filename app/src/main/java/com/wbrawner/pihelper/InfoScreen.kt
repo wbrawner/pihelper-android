@@ -22,8 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wbrawner.pihelper.shared.Action
-import com.wbrawner.pihelper.shared.Store
+import com.wbrawner.pihelper.shared.*
 import com.wbrawner.pihelper.ui.PihelperTheme
 
 @Composable
@@ -107,6 +106,11 @@ fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
             ) {
                 message.getStringAnnotations(it, it).firstOrNull()?.let { annotation ->
                     uriHandler.openUri(annotation.item)
+                    // TODO: Move this to the store?
+                    PlausibleAnalyticsHelper.event(
+                        AnalyticsEvent.LinkClicked(annotation.item),
+                        Route.ABOUT
+                    )
                 }
             }
             TextButton(onClick = onForgetPiholeClicked) {

@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
             val state by store.state.collectAsState()
             val navController = rememberNavController()
             LaunchedEffect(state.route) {
-                println("navigating to ${state.route.name}")
                 navController.navigate(state.route.name)
             }
             val effect by store.effects.collectAsState(initial = Effect.Empty)

@@ -63,6 +63,7 @@ private const val ONE_SECOND = 1_000
 
 class Store(
     private val apiService: PiholeAPIService,
+    private val analyticsHelper: AnalyticsHelper? = null,
     private val settings: Settings = Settings(),
     initialState: State = State()
 ) : CoroutineScope by CoroutineScope(Dispatchers.Main) {
@@ -74,14 +75,12 @@ class Store(
     private var scanJob: Job? = null
 
     init {
-        launch {
-            _state.collect {
-                println(it)
-            }
-        }
+        var previousRoute: Route? = null
         val host: String? = initialState.host ?: settings[KEY_HOST]
         val apiKey: String? = initialState.apiKey ?: settings[KEY_API_KEY]
         if (!host.isNullOrBlank() && !apiKey.isNullOrBlank()) {
+            // This avoids reporting a page view for the connect page when it isn't actually viewed
+            previousRoute = Route.CONNECT
             apiService.baseUrl = host
             apiService.apiKey = apiKey
             _state.value = initialState.copy(
@@ -96,6 +95,16 @@ class Store(
                 connect("pi.hole", false)
             }
         }
+        launch {
+            delay(1000)
+            _state.collect {
+                println(it)
+                if (it.route != previousRoute) {
+                    previousRoute = it.route
+                    analyticsHelper?.pageView(it.route)
+                }
+            }
+        }
     }
 
     fun dispatch(action: Action) {
@@ -104,17 +113,47 @@ class Store(
             is Action.Authenticate -> {
                 when (action.authString) {
                     // The Pi-hole API key is just the web password hashed twice with SHA-256
-                    is AuthenticationString.Password -> authenticate(
-                        action.authString.value.hash().hash()
-                    )
-                    is AuthenticationString.Token -> authenticate(action.authString.value)
+                    is AuthenticationString.Password -> {
+                        authenticate(
+                            action.authString.value.hash().hash()
+                        )
+                        analyticsHelper?.event(
+                            AnalyticsEvent.AuthenticateWithPasswordButtonClicked,
+                            _state.value.route
+                        )
+                    }
+                    is AuthenticationString.Token -> {
+                        authenticate(action.authString.value)
+                        analyticsHelper?.event(
+                            AnalyticsEvent.AuthenticateWithApiKeyButtonClicked,
+                            _state.value.route
+                        )
+                    }
                 }
             }
-            is Action.Connect -> connect(action.host)
-            is Action.Disable -> disable(action.duration)
-            Action.Enable -> enable()
-            Action.Forget -> forget()
-            is Action.Scan -> scan(action.deviceIp)
+            is Action.Connect -> {
+                connect(action.host)
+                analyticsHelper?.event(AnalyticsEvent.ConnectButtonClick, _state.value.route)
+            }
+            is Action.Disable -> {
+                disable(action.duration)
+                analyticsHelper?.event(
+                    AnalyticsEvent.DisableButtonClicked(action.duration),
+                    _state.value.route
+                )
+            }
+            Action.Enable -> {
+                enable()
+                analyticsHelper?.event(AnalyticsEvent.EnableButtonClicked, _state.value.route)
+            }
+            Action.Forget -> {
+                forget()
+                analyticsHelper?.event(AnalyticsEvent.ForgetButtonClicked, _state.value.route)
+            }
+            is Action.Scan -> {
+                scan(action.deviceIp)
+                analyticsHelper?.event(AnalyticsEvent.ScanButtonClick, _state.value.route)
+            }
             Action.About -> _state.value = _state.value.copy(route = Route.ABOUT)
             Action.Back -> back()
         }

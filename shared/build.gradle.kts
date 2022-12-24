@@ -29,6 +29,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.android)
+                implementation(libs.plausible)
             }
         }
 
