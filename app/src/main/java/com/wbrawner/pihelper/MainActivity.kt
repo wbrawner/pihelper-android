@@ -9,15 +9,8 @@ import android.view.animation.AnticipateInterpolator
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -29,7 +22,11 @@ import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Effect
 import com.wbrawner.pihelper.shared.Route
 import com.wbrawner.pihelper.shared.Store
-import com.wbrawner.pihelper.ui.PihelperTheme
+import com.wbrawner.pihelper.shared.ui.AuthScreen
+import com.wbrawner.pihelper.shared.ui.InfoScreen
+import com.wbrawner.pihelper.shared.ui.MainScreen
+import com.wbrawner.pihelper.shared.ui.component.LoadingSpinner
+import com.wbrawner.pihelper.shared.ui.theme.PihelperTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -131,26 +128,6 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun LoadingSpinner(animate: Boolean = false) {
-    val animation = rememberInfiniteTransition()
-    val rotation by animation.animateValue(
-        initialValue = 0f,
-        targetValue = 360f,
-        typeConverter = Float.VectorConverter,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-    Image(
-        modifier = Modifier.rotate(if (animate) rotation else 0f),
-        painter = painterResource(id = R.drawable.ic_app_logo),
-        contentDescription = "Loading",
-        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-    )
-}
-
-@Composable
 @Preview
 fun LoadingSpinner_Preview() {
     LoadingSpinner()
@@ -170,3 +147,11 @@ enum class ShortcutActions(val fullName: String) {
 }
 
 const val DURATION: String = "com.wbrawner.pihelper.MainActivityKt.DURATION"
+
+@Composable
+@DayNightPreview
+fun InfoScreen_Preview() {
+    PihelperTheme {
+        InfoScreen({}, {})
+    }
+}

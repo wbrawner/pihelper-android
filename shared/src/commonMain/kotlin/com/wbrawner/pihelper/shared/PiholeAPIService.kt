@@ -3,6 +3,7 @@ package com.wbrawner.pihelper.shared
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -25,6 +26,10 @@ interface PiholeAPIService {
 
     companion object
 }
+
+fun PiholeAPIService.Companion.create() = KtorPiholeAPIService(HttpClient(CIO) {
+    commonConfig()
+})
 
 fun <T : HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
     install(ContentNegotiation) {

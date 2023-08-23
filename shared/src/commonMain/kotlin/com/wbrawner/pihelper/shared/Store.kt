@@ -230,6 +230,7 @@ class Store(
                     route = Route.AUTH,
                 )
             } catch (e: Exception) {
+                e.printStackTrace()
                 _state.value = _state.value.copy(loading = false)
                 if (emitError) {
                     _effects.emit(Effect.Error(e.message ?: "Failed to connect to $host"))

@@ -1,13 +1,12 @@
-package com.wbrawner.pihelper.ui
+package com.wbrawner.pihelper.shared.ui.theme
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 
 private val DarkColorPalette = darkColorScheme(
     background = Color.Black,
@@ -31,20 +30,10 @@ private val LightColorPalette = lightColorScheme(
 
 @Composable
 fun PihelperTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val context = LocalContext.current
-    val dynamic = false
-    val colors = if (dynamic) {
-        if (darkTheme) {
-            dynamicDarkColorScheme(context)
-        } else {
-            dynamicLightColorScheme(context)
-        }
+    val colors = if (darkTheme) {
+        DarkColorPalette
     } else {
-        if (darkTheme) {
-            DarkColorPalette
-        } else {
-            LightColorPalette
-        }
+        LightColorPalette
     }
 
     MaterialTheme(
@@ -56,7 +45,3 @@ fun PihelperTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composab
         }
     )
 }
-
-@Preview(uiMode = UI_MODE_NIGHT_NO)
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-annotation class DayNightPreview

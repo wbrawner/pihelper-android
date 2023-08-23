@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.wbrawner.pihelper
+package com.wbrawner.pihelper.shared.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -24,9 +24,8 @@ import com.wbrawner.pihelper.shared.Action
 import com.wbrawner.pihelper.shared.Effect
 import com.wbrawner.pihelper.shared.Status
 import com.wbrawner.pihelper.shared.Store
-import com.wbrawner.pihelper.ui.DayNightPreview
-import com.wbrawner.pihelper.ui.PihelperTheme
-import java.util.*
+import com.wbrawner.pihelper.shared.ui.component.LoadingSpinner
+import com.wbrawner.pihelper.shared.ui.component.PrimaryButton
 import kotlin.math.pow
 import kotlin.math.roundToLong
 import com.wbrawner.pihelper.shared.State as PihelperState
@@ -51,7 +50,6 @@ const val DISABLE_PERMANENT_BUTTON_TAG = "disablePermanentButton"
 fun MainScreen(store: Store) {
     val state by store.state.collectAsState()
     val effect by store.effects.collectAsState(initial = Effect.Empty)
-    println(effect)
     MainScreen(state = state, error = effect as? Effect.Error, dispatch = store::dispatch)
 }
 
@@ -137,7 +135,7 @@ fun StatusLabel(status: Status) {
             modifier = Modifier.testTag(STATUS_TEXT_TAG),
             color = color,
             fontWeight = FontWeight.Bold,
-            text = status.name.capitalize(Locale.US)
+            text = status.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
         )
         if (status is Status.Disabled && !status.timeRemaining.isNullOrBlank()) {
             Text(
@@ -201,30 +199,13 @@ fun DisableControls(disable: (duration: Long?) -> Unit) {
     }
 }
 
-@Composable
-fun PrimaryButton(
-    modifier: Modifier = Modifier,
-    text: String,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        onClick = onClick
-    ) {
-        Text(text)
-    }
-}
-
 enum class Duration {
     SECONDS,
     MINUTES,
     HOURS
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTimeDialog(
     visible: Boolean,
@@ -330,58 +311,58 @@ fun DurationToggle(
     }
 }
 
-@Composable
-@DayNightPreview
-fun CustomTimeDialog_Preview() {
-    PihelperTheme {
-        CustomTimeDialog(true, {}) { }
-    }
-}
-
-@Composable
-@DayNightPreview
-fun StatusLabelEnabled_Preview() {
-    PihelperTheme {
-        StatusLabel(Status.Enabled)
-    }
-}
-
-@Composable
-@DayNightPreview
-fun StatusLabelDisabled_Preview() {
-    PihelperTheme {
-        StatusLabel(Status.Disabled())
-    }
-}
-
-@Composable
-@DayNightPreview
-fun StatusLabelDisabledWithTime_Preview() {
-    PihelperTheme {
-        StatusLabel(Status.Disabled("12:34:56"))
-    }
-}
-
-@Composable
-@DayNightPreview
-fun PrimaryButton_Preview() {
-    PihelperTheme {
-        PrimaryButton(text = "Disable") {}
-    }
-}
-
-@Composable
-@DayNightPreview
-fun EnableControls_Preview() {
-    PihelperTheme {
-        EnableControls {}
-    }
-}
-
-@Composable
-@DayNightPreview
-fun DisableControls_Preview() {
-    PihelperTheme {
-        DisableControls {}
-    }
-}
+//@Composable
+//@DayNightPreview
+//fun CustomTimeDialog_Preview() {
+//    PihelperTheme {
+//        CustomTimeDialog(true, {}) { }
+//    }
+//}
+//
+//@Composable
+//@DayNightPreview
+//fun StatusLabelEnabled_Preview() {
+//    PihelperTheme {
+//        StatusLabel(Status.Enabled)
+//    }
+//}
+//
+//@Composable
+//@DayNightPreview
+//fun StatusLabelDisabled_Preview() {
+//    PihelperTheme {
+//        StatusLabel(Status.Disabled())
+//    }
+//}
+//
+//@Composable
+//@DayNightPreview
+//fun StatusLabelDisabledWithTime_Preview() {
+//    PihelperTheme {
+//        StatusLabel(Status.Disabled("12:34:56"))
+//    }
+//}
+//
+//@Composable
+//@DayNightPreview
+//fun PrimaryButton_Preview() {
+//    PihelperTheme {
+//        PrimaryButton(text = "Disable") {}
+//    }
+//}
+//
+//@Composable
+//@DayNightPreview
+//fun EnableControls_Preview() {
+//    PihelperTheme {
+//        EnableControls {}
+//    }
+//}
+//
+//@Composable
+//@DayNightPreview
+//fun DisableControls_Preview() {
+//    PihelperTheme {
+//        DisableControls {}
+//    }
+//}

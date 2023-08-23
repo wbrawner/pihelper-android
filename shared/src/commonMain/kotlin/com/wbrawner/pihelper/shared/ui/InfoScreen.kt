@@ -1,7 +1,5 @@
-package com.wbrawner.pihelper
+package com.wbrawner.pihelper.shared.ui
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +18,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wbrawner.pihelper.shared.*
-import com.wbrawner.pihelper.ui.PihelperTheme
+import com.wbrawner.pihelper.shared.Action
+import com.wbrawner.pihelper.shared.Store
+import com.wbrawner.pihelper.shared.ui.component.LoadingSpinner
 
 @Composable
 fun InfoScreen(store: Store) {
@@ -107,24 +105,15 @@ fun InfoScreen(onBackClicked: () -> Unit, onForgetPiholeClicked: () -> Unit) {
                 message.getStringAnnotations(it, it).firstOrNull()?.let { annotation ->
                     uriHandler.openUri(annotation.item)
                     // TODO: Move this to the store?
-                    PlausibleAnalyticsHelper.event(
-                        AnalyticsEvent.LinkClicked(annotation.item),
-                        Route.ABOUT
-                    )
+//                    PlausibleAnalyticsHelper.event(
+//                        AnalyticsEvent.LinkClicked(annotation.item),
+//                        Route.ABOUT
+//                    )
                 }
             }
             TextButton(onClick = onForgetPiholeClicked) {
                 Text(text = "Forget Pi-hole")
             }
         }
-    }
-}
-
-@Composable
-@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
-@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-fun InfoScreen_Preview() {
-    PihelperTheme {
-        InfoScreen({}, {})
     }
 }

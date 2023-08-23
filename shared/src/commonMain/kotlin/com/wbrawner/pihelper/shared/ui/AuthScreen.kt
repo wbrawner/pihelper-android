@@ -1,6 +1,5 @@
-package com.wbrawner.pihelper
+package com.wbrawner.pihelper.shared.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,11 +21,15 @@ import androidx.compose.ui.platform.LocalAutofill
 import androidx.compose.ui.platform.LocalAutofillTree
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.wbrawner.pihelper.shared.*
+import com.wbrawner.pihelper.shared.Action
+import com.wbrawner.pihelper.shared.AuthenticationString
+import com.wbrawner.pihelper.shared.Effect
+import com.wbrawner.pihelper.shared.Store
+import com.wbrawner.pihelper.shared.ui.component.LoadingSpinner
+import com.wbrawner.pihelper.shared.ui.component.PrimaryButton
 
 const val AUTH_SCREEN_TAG = "authScreen"
 const val SUCCESS_TEXT_TAG = "successText"
@@ -63,10 +66,7 @@ fun AuthScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_app_logo),
-            contentDescription = null
-        )
+        LoadingSpinner(animate = false)
         Text(
             modifier = Modifier.testTag(SUCCESS_TEXT_TAG),
             text = "Pi-helper has successfully connected to your Pi-Hole!",

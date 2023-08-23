@@ -18,5 +18,8 @@ allprojects {
         maven {
             url = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         }
+        maven {
+            url = URI("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
+        }
     }
 }

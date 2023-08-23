@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.platform.app.InstrumentationRegistry
-import com.wbrawner.pihelper.*
+import com.wbrawner.pihelper.shared.ui.*
 
 class AuthScreenRobot(private val testRule: ComposeTestRule) {
     val context: Context = InstrumentationRegistry.getInstrumentation().context

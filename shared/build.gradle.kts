@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     kotlin("plugin.serialization")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
@@ -11,11 +12,13 @@ kotlin {
             baseName = "Pihelper"
         }
     }
+    jvm("desktop")
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.client.content.negotiation)
@@ -23,12 +26,16 @@ kotlin {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.serialization.json)
                 api(libs.multiplatform.settings)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material3)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.components.resources)
             }
         }
 
         val androidMain by getting {
             dependencies {
-                implementation(libs.ktor.client.android)
                 implementation(libs.plausible)
             }
         }
@@ -40,7 +47,13 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                implementation(libs.ktor.client.ios)
+            }
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.common)
+                implementation(compose.uiTooling)
             }
         }
     }

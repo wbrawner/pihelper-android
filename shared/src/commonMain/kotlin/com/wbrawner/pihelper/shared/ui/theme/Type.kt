@@ -1,4 +1,4 @@
-package com.wbrawner.pihelper.ui
+package com.wbrawner.pihelper.shared.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

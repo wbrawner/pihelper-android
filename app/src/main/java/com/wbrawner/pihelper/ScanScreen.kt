@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.pihelper.shared.Store
-import com.wbrawner.pihelper.ui.PihelperTheme
+import com.wbrawner.pihelper.shared.ui.theme.PihelperTheme
 
 @Composable
 fun ScanScreen(store: Store) {

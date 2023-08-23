@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.platform.app.InstrumentationRegistry
-import com.wbrawner.pihelper.DISABLE_PERMANENT_BUTTON_TAG
-import com.wbrawner.pihelper.ENABLE_BUTTON_TAG
-import com.wbrawner.pihelper.MAIN_SCREEN_TAG
-import com.wbrawner.pihelper.STATUS_TEXT_TAG
+import com.wbrawner.pihelper.shared.ui.DISABLE_PERMANENT_BUTTON_TAG
+import com.wbrawner.pihelper.shared.ui.ENABLE_BUTTON_TAG
+import com.wbrawner.pihelper.shared.ui.MAIN_SCREEN_TAG
+import com.wbrawner.pihelper.shared.ui.STATUS_TEXT_TAG
 
 fun onMainScreen(testRule: ComposeTestRule, actions: MainScreenRobot.() -> Unit) =
     MainScreenRobot(testRule).apply { actions() }

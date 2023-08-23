@@ -1,13 +1,8 @@
 package com.wbrawner.pihelper.shared
 
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
 import java.math.BigInteger
 import java.security.MessageDigest
 
-fun PiholeAPIService.Companion.create() = KtorPiholeAPIService(HttpClient(Android) {
-    commonConfig()
-})
 
 actual fun String.hash(): String = BigInteger(
     1,
