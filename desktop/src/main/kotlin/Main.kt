@@ -47,8 +47,6 @@ fun App(state: State) {
 
 fun main() = application {
     LaunchedEffect(Unit) {
-        System.loadLibrary("app/Pi-helper.app/Contents/app/libskiko-macos-arm64.dylib")
-        println("loaded skiko")
         System.setProperty("apple.awt.enableTemplateImages", "true")
     }
     val state by store.state.collectAsState()
