@@ -59,10 +59,10 @@ compose.desktop {
                 iconFile.set(project.file("src/main/resources/icon.icns"))
             }
             windows {
-                iconFile.set(project.file("icon.ico"))
+                iconFile.set(project.file("src/main/resources/icon.ico"))
             }
             linux {
-                iconFile.set(project.file("icon.png"))
+                iconFile.set(project.file("src/main/resources/icon.png"))
             }
         }
     }
