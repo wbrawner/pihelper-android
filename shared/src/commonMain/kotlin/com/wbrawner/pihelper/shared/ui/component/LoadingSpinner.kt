@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -26,7 +27,7 @@ fun LoadingSpinner(animate: Boolean = false) {
     )
     Image(
         modifier = Modifier.rotate(if (animate) rotation else 0f),
-        painter = painterResource("img/ic_app_logo.xml"),
+        painter = painterResource(DrawableResource("img/ic_app_logo.xml")),
         contentDescription = "Loading",
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
     )

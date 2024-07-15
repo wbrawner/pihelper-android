@@ -6,6 +6,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.isTraySupported
 import androidx.compose.ui.window.rememberTrayState
 import com.wbrawner.pihelper.shared.*
 import com.wbrawner.pihelper.shared.State
@@ -121,11 +122,15 @@ fun main() = application {
         }
     )
 
-    if (isOpen) {
+    if (!isTraySupported || isOpen) {
         Window(
             title = "Pi-helper",
             onCloseRequest = {
-                isOpen = false
+                if (isTraySupported) {
+                    isOpen = false
+                } else {
+                    exitApplication()
+                }
             }) {
             App(state)
         }
